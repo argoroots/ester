@@ -1,0 +1,342 @@
+
+
+Unused terminals:
+
+
+Grammar
+
+Rule 1     top -> cclfind
+Rule 2     top -> ATTRSET LPAREN WORD SLASH cclfind RPAREN
+Rule 3     cclfind -> cclfind LOGOP elements
+Rule 4     cclfind -> elements
+Rule 5     elements -> LPAREN cclfind RPAREN
+Rule 6     elements -> SET RELOP WORD
+Rule 7     elements -> val
+Rule 8     elements -> quallist RELOP val
+Rule 9     quallist -> QUAL
+Rule 10    quallist -> quallist COMMA QUAL
+Rule 11    val -> QUOTEDVALUE
+Rule 12    val -> val WORD
+Rule 13    val -> WORD
+
+Terminals, with rules where they appear
+
+QUOTEDVALUE          : 11
+LOGOP                : 3
+SET                  : 6
+WORD                 : 2 6 12 13
+RELOP                : 6 8
+ATTRSET              : 2
+SLASH                : 2
+QUAL                 : 9 10
+COMMA                : 10
+LPAREN               : 2 5
+error                : 
+RPAREN               : 2 5
+
+Nonterminals, with rules where they appear
+
+top                  : 0
+elements             : 3 4
+cclfind              : 1 2 3 5
+quallist             : 8 10
+val                  : 7 8 12
+
+
+Parsing method: SLR
+
+
+state 0
+
+    S' -> . top
+    top -> . cclfind
+    top -> . ATTRSET LPAREN WORD SLASH cclfind RPAREN
+    cclfind -> . cclfind LOGOP elements
+    cclfind -> . elements
+    elements -> . LPAREN cclfind RPAREN
+    elements -> . SET RELOP WORD
+    elements -> . val
+    elements -> . quallist RELOP val
+    val -> . QUOTEDVALUE
+    val -> . val WORD
+    val -> . WORD
+    quallist -> . QUAL
+    quallist -> . quallist COMMA QUAL
+
+    ATTRSET         shift and go to state 5
+    LPAREN          shift and go to state 11
+    SET             shift and go to state 9
+    QUOTEDVALUE     shift and go to state 1
+    WORD            shift and go to state 3
+    QUAL            shift and go to state 8
+
+
+state 1
+
+    val -> QUOTEDVALUE .
+
+    $               reduce using rule 11
+    RPAREN          reduce using rule 11
+    LOGOP           reduce using rule 11
+    WORD            reduce using rule 11
+
+
+state 2
+
+    cclfind -> elements .
+
+    $               reduce using rule 4
+    RPAREN          reduce using rule 4
+    LOGOP           reduce using rule 4
+
+
+state 3
+
+    val -> WORD .
+
+    $               reduce using rule 13
+    RPAREN          reduce using rule 13
+    LOGOP           reduce using rule 13
+    WORD            reduce using rule 13
+
+
+state 4
+
+    elements -> val .
+    val -> val . WORD
+
+    $               reduce using rule 7
+    RPAREN          reduce using rule 7
+    LOGOP           reduce using rule 7
+    WORD            shift and go to state 12
+
+
+state 5
+
+    top -> ATTRSET . LPAREN WORD SLASH cclfind RPAREN
+
+    LPAREN          shift and go to state 13
+
+
+state 6
+
+    S' -> top .
+
+
+
+state 7
+
+    top -> cclfind .
+    cclfind -> cclfind . LOGOP elements
+
+    $               reduce using rule 1
+    LOGOP           shift and go to state 14
+
+
+state 8
+
+    quallist -> QUAL .
+
+    RELOP           reduce using rule 9
+    COMMA           reduce using rule 9
+
+
+state 9
+
+    elements -> SET . RELOP WORD
+
+    RELOP           shift and go to state 15
+
+
+state 10
+
+    elements -> quallist . RELOP val
+    quallist -> quallist . COMMA QUAL
+
+    RELOP           shift and go to state 17
+    COMMA           shift and go to state 16
+
+
+state 11
+
+    elements -> LPAREN . cclfind RPAREN
+    cclfind -> . cclfind LOGOP elements
+    cclfind -> . elements
+    elements -> . LPAREN cclfind RPAREN
+    elements -> . SET RELOP WORD
+    elements -> . val
+    elements -> . quallist RELOP val
+    val -> . QUOTEDVALUE
+    val -> . val WORD
+    val -> . WORD
+    quallist -> . QUAL
+    quallist -> . quallist COMMA QUAL
+
+    LPAREN          shift and go to state 11
+    SET             shift and go to state 9
+    QUOTEDVALUE     shift and go to state 1
+    WORD            shift and go to state 3
+    QUAL            shift and go to state 8
+
+
+state 12
+
+    val -> val WORD .
+
+    $               reduce using rule 12
+    RPAREN          reduce using rule 12
+    LOGOP           reduce using rule 12
+    WORD            reduce using rule 12
+
+
+state 13
+
+    top -> ATTRSET LPAREN . WORD SLASH cclfind RPAREN
+
+    WORD            shift and go to state 19
+
+
+state 14
+
+    cclfind -> cclfind LOGOP . elements
+    elements -> . LPAREN cclfind RPAREN
+    elements -> . SET RELOP WORD
+    elements -> . val
+    elements -> . quallist RELOP val
+    val -> . QUOTEDVALUE
+    val -> . val WORD
+    val -> . WORD
+    quallist -> . QUAL
+    quallist -> . quallist COMMA QUAL
+
+    LPAREN          shift and go to state 11
+    SET             shift and go to state 9
+    QUOTEDVALUE     shift and go to state 1
+    WORD            shift and go to state 3
+    QUAL            shift and go to state 8
+
+
+state 15
+
+    elements -> SET RELOP . WORD
+
+    WORD            shift and go to state 21
+
+
+state 16
+
+    quallist -> quallist COMMA . QUAL
+
+    QUAL            shift and go to state 22
+
+
+state 17
+
+    elements -> quallist RELOP . val
+    val -> . QUOTEDVALUE
+    val -> . val WORD
+    val -> . WORD
+
+    QUOTEDVALUE     shift and go to state 1
+    WORD            shift and go to state 3
+
+
+state 18
+
+    elements -> LPAREN cclfind . RPAREN
+    cclfind -> cclfind . LOGOP elements
+
+    RPAREN          shift and go to state 24
+    LOGOP           shift and go to state 14
+
+
+state 19
+
+    top -> ATTRSET LPAREN WORD . SLASH cclfind RPAREN
+
+    SLASH           shift and go to state 25
+
+
+state 20
+
+    cclfind -> cclfind LOGOP elements .
+
+    $               reduce using rule 3
+    RPAREN          reduce using rule 3
+    LOGOP           reduce using rule 3
+
+
+state 21
+
+    elements -> SET RELOP WORD .
+
+    $               reduce using rule 6
+    RPAREN          reduce using rule 6
+    LOGOP           reduce using rule 6
+
+
+state 22
+
+    quallist -> quallist COMMA QUAL .
+
+    RELOP           reduce using rule 10
+    COMMA           reduce using rule 10
+
+
+state 23
+
+    elements -> quallist RELOP val .
+    val -> val . WORD
+
+    $               reduce using rule 8
+    RPAREN          reduce using rule 8
+    LOGOP           reduce using rule 8
+    WORD            shift and go to state 12
+
+
+state 24
+
+    elements -> LPAREN cclfind RPAREN .
+
+    $               reduce using rule 5
+    RPAREN          reduce using rule 5
+    LOGOP           reduce using rule 5
+
+
+state 25
+
+    top -> ATTRSET LPAREN WORD SLASH . cclfind RPAREN
+    cclfind -> . cclfind LOGOP elements
+    cclfind -> . elements
+    elements -> . LPAREN cclfind RPAREN
+    elements -> . SET RELOP WORD
+    elements -> . val
+    elements -> . quallist RELOP val
+    val -> . QUOTEDVALUE
+    val -> . val WORD
+    val -> . WORD
+    quallist -> . QUAL
+    quallist -> . quallist COMMA QUAL
+
+    LPAREN          shift and go to state 11
+    SET             shift and go to state 9
+    QUOTEDVALUE     shift and go to state 1
+    WORD            shift and go to state 3
+    QUAL            shift and go to state 8
+
+
+state 26
+
+    top -> ATTRSET LPAREN WORD SLASH cclfind . RPAREN
+    cclfind -> cclfind . LOGOP elements
+
+    RPAREN          shift and go to state 27
+    LOGOP           shift and go to state 14
+
+
+state 27
+
+    top -> ATTRSET LPAREN WORD SLASH cclfind RPAREN .
+
+    $               reduce using rule 2
+

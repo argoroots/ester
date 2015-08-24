@@ -1,0 +1,118 @@
+#!/usr/bin/env python
+
+import compiler
+import sys
+import visitor
+
+class PyVisitor:
+    def __init__ (self, defined_dict, indent = 0):
+        self.defined_dict  = defined_dict
+        self.tags_def = 'EXPLICIT' # default = explicit
+        self.indent_lev = 0
+        self.assignments = {}
+        self.dependencies = {}
+        self.pyquotes = []
+        self.defined_dict = defined_dict
+        self.name_ctr = 0
+    def spaces (self):
+        return " " * (4 * self.indent_lev)
+    def indent (self):
+        self.indent_lev += 1
+    def outdent (self):
+        self.indent_lev -= 1
+        assert (self.indent_lev >= 0)
+    def register_assignment (self, ident, val, dependencies):
+        if self.assignments.has_key (ident):
+            raise "Duplicate assignment for " + ident
+        if self.defined_dict.has_key (ident):
+            raise "cross-module duplicates for " + ident
+        self.defined_dict [ident] = 1
+        self.assignments[ident] = val
+        self.dependencies [ident] = dependencies
+        return ""
+    #        return "#%s depends on %s" % (ident, str (dependencies))
+    def register_pyquote (self, val):
+        self.pyquotes.append (val)
+        return ""
+    def output_assignments (self):
+        already_output = {}
+        text_list = []
+        assign_keys = self.assignments.keys()
+        to_output_count = len (assign_keys)
+        while 1:
+            any_output = 0
+            for (ident, val) in self.assignments.iteritems ():
+                if already_output.has_key (ident):
+                    continue
+                ok = 1
+                for d in self.dependencies [ident]:
+                    if (not already_output.has_key (d) and
+                        d in assign_keys):
+                        ok = 0
+                if ok:
+                    text_list.append ("%s=%s" % (ident,
+                                                self.assignments [ident]))
+                    already_output [ident] = 1
+                    any_output = 1
+                    to_output_count -= 1
+                    assert (to_output_count >= 0)
+            if not any_output:
+                if to_output_count == 0:
+                    break
+                # OK, we detected a cycle
+                cycle_list = []
+                for ident in self.assignments.iterkeys ():
+                    if not already_output.has_key (ident):
+                        depend_list = [d for d in self.dependencies[ident] if d in assign_keys]
+                        cycle_list.append ("%s(%s)" % (ident, ",".join (depend_list)))
+                        
+                text_list.append ("# Cycle XXX " + ",".join (cycle_list))
+                for (ident, val) in self.assignments.iteritems ():
+                    if not already_output.has_key (ident):
+                        text_list.append ("%s=%s" % (ident, self.assignments [ident]))
+                break
+
+        return "\n".join (text_list)
+    def output_pyquotes (self):
+        return "\n".join (self.pyquotes)
+    def make_new_name (self):
+        self.name_ctr += 1
+        return "_compiler_generated_name_%d" % (self.name_ctr,)
+    def 
+
+def do_module (ast, defined_dict):
+    assert (ast.type == 'Module')
+    visitor = PyVisitor (defined_dict)
+    walker = ASTWalk ()
+    walker.preorder (ast, visitor)
+    print ctx.output_assignments ()
+    print ctx.output_pyquotes ()
+
+
+import time
+def testyacc (s, fn, defined_dict):
+    ast = yacc.parse (s)
+    time_str = time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime())
+    print """#!/usr/bin/env python
+# Auto-generated from %s at %s
+from PyZ3950 import asn1""" % (fn, time_str)
+    for module in ast:
+        do_module (module, defined_dict)
+
+
+if __name__ == '__main__':
+    testfn = testyacc
+    if len (sys.argv) == 1:
+        while 1:
+            s = raw_input ('Query: ')
+            if len (s) == 0:
+                break
+            testfn (s, 'console', {})
+    else:
+        defined_dict = {}
+        for fn in sys.argv [1:]:
+            f = open (fn, "r")
+            testfn (f.read (), fn, defined_dict)
+            f.close ()
+            lexer.lineno = 1
+

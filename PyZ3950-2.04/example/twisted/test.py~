@@ -1,0 +1,35 @@
+#!/usr/bin/env python
+
+import random
+
+from PyZ3950 import zoom
+
+class TestThread:
+    def __init__ (self):
+        self.count = 0
+        self.queries = [
+            'any = wive and any = wealthily',
+            'any = mandrake',
+            'ti = Necronomicon',
+            'au = Bourbaki']
+    def consume (self, record):
+        pass
+            
+    def run (self):
+        self.conn = zoom.Connection ('localhost', 2100)
+        conn.preferredRecordSyntax = 'SUTRS'
+        while 1:
+            query_str = random.choice (self.queries)
+            q = zoom.Query ('CCL', query_str)
+            try:
+                r = conn.search (q)
+                for rec in r:
+                    self.consume (rec)
+            except zoom.Bib1Err, err:
+                pass
+
+if __name__ == '__main__':
+    t = TestThread ()
+    t.run ()
+        
+        

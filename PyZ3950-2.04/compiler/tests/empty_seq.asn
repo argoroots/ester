@@ -1,0 +1,7 @@
+Foo DEFINITIONS EXPLICIT TAGS ::=
+
+BEGIN
+
+Foo ::= SEQUENCE {}
+
+END

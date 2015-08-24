@@ -1,0 +1,12 @@
+PERTEST DEFINITIONS AUTOMATIC TAGS ::=
+BEGIN
+
+TestSeq = SEQUENCE {
+      a INTEGER (0..7),
+      b BOOLEAN,
+      c INTEGER (0..3),
+      d SEQUENCE {
+         d1 BOOLEAN,
+	 d2 BOOLEAN}}
+
+END
