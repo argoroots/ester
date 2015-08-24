@@ -356,8 +356,10 @@ class CtxBase:
         self.codec_dict_stack[-1][defn_inst.base_tag] = (codec, strip_bom)
     def get_codec (self, base_tag):
         def default_enc (x):
-            if isinstance (x, type (u"")):
+            if isinstance (x, str):
                 return (x.encode ('ascii'), 0)
+            elif isinstance (x, basestring):
+                return (x.encode ('utf-8'), 0)
             return (x, 0)
         identity = ((default_enc, lambda x:(x,0)), 0)
         # we ignore lengths consumed.  I don't think this means
@@ -809,7 +811,7 @@ class ELTBASE:
 class TAG: # base class for IMPLICIT and EXPLICIT
     def __init__ (self, tag, cls=CONTEXT_FLAG):
         if type (tag) == type (0):
-            tag = (CONTEXT_FLAG, tag)
+            tag = (cls, tag)
         self.tag = (tag[0] | self.flags, tag[1])
     def set_typ (self, typ):
         self.typ = typ
@@ -2006,7 +2008,6 @@ def run (print_flag):
     
          
 
-import profile
 
 if __name__ == '__main__':
     pwc = PERWriteCtx (aligned = 0)
@@ -2029,8 +2030,5 @@ if __name__ == '__main__':
     test_def.encode_per (pwc, test)
     print "bit offset", pwc.bit_offset
     print map (hex, pwc.get_data ())
-    if 0:
-        profile.run ("run (0)")
-    else:
-        run (1)
+    run (1)
     
