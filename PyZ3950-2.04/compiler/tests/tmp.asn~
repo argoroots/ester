@@ -1,8 +1,0 @@
-TransparencyParameters ::= SEQUENCE {
-  presentationOrder  INTEGER(1..256),
-  offset-x           INTEGER(-262144..262143), -- 1/8 pixels
-  offset-y           INTEGER(-262144..262143), -- 1/8 pixels
-  scale-x            INTEGER(1..255),
-  scale-y            INTEGER(1..255),
-  ...
-}
