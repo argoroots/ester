@@ -230,7 +230,9 @@ class EsterSearch(RequestHandler):
 
 
     def get(self):
-        query = self.get_argument('query', default=0, strip=True)
+        query = self.get_argument('q', default=0, strip=True)
+        if not query:
+            return self.json({'error': 'No q parameter!'})
         query = query.encode('utf-8').replace('http://tartu.ester.ee/record=', '').replace('http://tallinn.ester.ee/record=', '').replace('~S1*est', '')
 
         ester = ESTER()
