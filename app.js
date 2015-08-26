@@ -1,10 +1,6 @@
 if(process.env.NEW_RELIC_LICENSE_KEY) require('newrelic')
 
 var express = require('express')
-var path    = require('path')
-var fs      = require('fs')
-var logger  = require('morgan')
-var rotator = require('file-stream-rotator')
 var zoom    = require('node-zoom')
 var debug   = require('debug')('app:' + path.basename(__filename).replace('.js', ''))
 
@@ -15,29 +11,10 @@ APP_VERSION   = require('./package').version
 APP_STARTED   = new Date().toISOString()
 APP_DEBUG     = process.env.DEBUG
 APP_PORT      = process.env.PORT || 3000
-APP_LOG_DIR   = process.env.LOGDIR || __dirname + '/log'
-
-
-
-// ensure log directory exists
-fs.existsSync(APP_LOG_DIR) || fs.mkdirSync(APP_LOG_DIR)
-
-
-
-// create a rotating write stream
-var access_log_stream = rotator.getStream({
-  filename: APP_LOG_DIR + '/access-%DATE%.log',
-  frequency: 'daily',
-  verbose: false,
-  date_format: 'YYYY-MM-DD'
-})
 
 
 
 express()
-    // logging
-    .use(logger(':date[iso] | HTTP/:http-version | :method | :status | :url | :res[content-length] b | :response-time ms | :remote-addr | :referrer | :user-agent', {stream: access_log_stream}))
-
     // routes mapping
     .use('/', function(req, res, next) {
         var query = req.query.q
@@ -63,7 +40,9 @@ express()
                     }
                     res.send({
                         result: results,
-                        count: count
+                        count: count,
+                        version: APP_VERSION,
+                        started: APP_STARTED
                     })
                 })
             })
@@ -76,7 +55,9 @@ express()
         res.status(status)
         res.send({
             error: status,
-            message: err.message
+            message: err.message,
+            version: APP_VERSION,
+            started: APP_STARTED
         })
 
         if(err.status !== 404) debug(err)

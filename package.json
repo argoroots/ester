@@ -1,8 +1,8 @@
 {
     "private": true,
     "name": "entu-ester",
-    "version": "0.1.0",
-    "description": "ester.ee proxy for Entu",
+    "version": "0.2.0",
+    "description": "ester.ee proxy for Entu.ee",
     "homepage": "https://github.com/argoroots/entu-ester",
     "main": "app.js",
     "repository": {
@@ -19,11 +19,7 @@
     "dependencies": {
         "debug": "2.x",
         "express": "4.x",
-        "file-stream-rotator": "0.x",
-        "fs": "0.x",
-        "morgan": "1.x",
-        "newrelic": "*",
         "newrelic": "1.x",
-        "node-zoom": "*"
+        "node-zoom": "0.x"
     }
 }
