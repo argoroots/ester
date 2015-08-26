@@ -1,5 +1,7 @@
-FROM python:2.7-slim
+FROM node:0.12-slim
 
 ADD ./ /usr/src/entu-ester
+RUN apt-get update && apt-get install -y libgcrypt11-dev libgnutls28-dev libxml2-dev libxslt-dev dpkg-dev python pkg-config
+RUN cd /usr/src/entu-ester && npm install
 
-CMD ["python", "/usr/src/entu-ester/app.py"]
+CMD ["node", "/usr/src/entu-ester/app.js"]
