@@ -17,7 +17,6 @@ express()
     .use('/', function(req, res, next) {
         var query = req.query.q
         var results = []
-        var count = 0
 
         zoom.connection('193.40.4.242:212/INNOPAC')
             .set('preferredRecordSyntax', 'usmarc')
@@ -27,7 +26,14 @@ express()
                     next(err)
                     return
                 }
-                count = resultset.size
+                if(resultset.size === 0) {
+                    res.send({
+                        result: [],
+                        count: count,
+                        version: APP_VERSION,
+                        started: APP_STARTED
+                    })
+                }
                 resultset.getRecords(0, resultset.size, function(err, records) {
                     if(err) {
                         next(err)
@@ -38,7 +44,7 @@ express()
                     }
                     res.send({
                         result: results,
-                        count: count,
+                        count: resultset.size,
                         version: APP_VERSION,
                         started: APP_STARTED
                     })
