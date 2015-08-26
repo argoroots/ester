@@ -40,7 +40,6 @@ express()
 
     // routes mapping
     .use('/', function(req, res, next) {
-
         var query = req.query.q
         var results = []
         var count = 0
@@ -48,26 +47,18 @@ express()
         zoom.connection('193.40.4.242:212/INNOPAC')
             .set('preferredRecordSyntax', 'usmarc')
             .query('@or @attr 1=4 "' + query + '" @or @attr 1=7 "' + query + '" @attr 1=12 "' + query + '"')
-            .search(function (err, resultset) {
+            .search(function(err, resultset) {
                 count = resultset.size
-                resultset.getRecords(0, resultset.size, function (err, records) {
+                resultset.getRecords(0, resultset.size, function(err, records) {
                     while (records.hasNext()) {
                         results.push(records.next().json)
                     }
+                    res.send({
+                        result: results,
+                        count: count
+                    })
                 })
             })
-
-        self.send({
-            result: results,
-            count: count
-        })
-    })
-
-    // 404
-    .use(function(req, res, next) {
-        var err = new Error('Not Found')
-        err.status = 404
-        next(err)
     })
 
     // error
