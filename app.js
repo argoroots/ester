@@ -34,11 +34,12 @@ express()
                     while (records.hasNext()) {
                         var r = records.next()
                         if(!r) continue
-                        console.log('\n\ndatabase\n' + r.database)
+                        console.log(r)
                         console.log('\n\nsyntax\n' + r.syntax)
                         console.log('\n\nschema\n' + r.schema)
                         console.log('\n\nrender\n' + r.render)
                         console.log('\n\nraw\n' + r.raw)
+                        console.log('\n\ndatabase\n' + r.database)
                         results.push(r.json)
                     }
                     res.send({
