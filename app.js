@@ -33,8 +33,10 @@ express()
                     }
                     while (records.hasNext()) {
                         var r = records.next()
-                        if(!r) continue
-                        if(!r._record) continue
+                        if(!r || !r._record) {
+                            resultset.size = 0
+                            continue
+                        }
                         results.push(r.json)
                     }
                     res.send({
