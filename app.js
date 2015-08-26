@@ -33,6 +33,7 @@ express()
                         version: APP_VERSION,
                         started: APP_STARTED
                     })
+                    return
                 }
                 resultset.getRecords(0, resultset.size, function(err, records) {
                     if(err) {
