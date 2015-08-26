@@ -26,23 +26,20 @@ express()
                     next(err)
                     return
                 }
-                console.log(resultset.size)
-                if(resultset.size === 0) {
-                    res.send({
-                        result: [],
-                        count: count,
-                        version: APP_VERSION,
-                        started: APP_STARTED
-                    })
-                    return
-                }
                 resultset.getRecords(0, resultset.size, function(err, records) {
                     if(err) {
                         next(err)
                         return
                     }
                     while (records.hasNext()) {
-                        results.push(records.next().json)
+                        var r = records.next()
+                        if(!r) continue
+                        console.log('\n\ndatabase\n' + r.database)
+                        console.log('\n\nsyntax\n' + r.syntax)
+                        console.log('\n\nschema\n' + r.schema)
+                        console.log('\n\nrender\n' + r.render)
+                        console.log('\n\nraw\n' + r.raw)
+                        results.push(r.json)
                     }
                     res.send({
                         result: results,
@@ -60,8 +57,7 @@ express()
 
         res.status(status)
         res.send({
-            error: status,
-            message: err.message,
+            error: err.message,
             version: APP_VERSION,
             started: APP_STARTED
         })
