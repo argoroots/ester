@@ -57,7 +57,7 @@ express()
                 })
             })
 
-        self.write({
+        self.send({
             result: results,
             count: count
         })
@@ -75,7 +75,7 @@ express()
         var status = parseInt(err.status) || 500
 
         res.status(status)
-        res.write({
+        res.send({
             error: status,
             message: err.message
         })
