@@ -25,13 +25,13 @@ express()
             .set('preferredRecordSyntax', 'usmarc')
             .query('@or @attr 1=4 "' + query + '" @or @attr 1=7 "' + query + '" @attr 1=12 "' + query + '"')
             .search(function(err, resultset) {
-                if err {
+                if(err) {
                     next(err)
                     return
                 }
                 count = resultset.size
                 resultset.getRecords(0, resultset.size, function(err, records) {
-                    if err {
+                    if(err) {
                         next(err)
                         return
                     }
