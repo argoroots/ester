@@ -58,7 +58,7 @@ express()
             })
 
         self.write({
-            results: results
+            result: results,
             count: count
         })
     })
