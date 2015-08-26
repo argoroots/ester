@@ -2,15 +2,13 @@ if(process.env.NEW_RELIC_LICENSE_KEY) require('newrelic')
 
 var express = require('express')
 var zoom    = require('node-zoom')
-var debug   = require('debug')('app:' + path.basename(__filename).replace('.js', ''))
 
 
 
 // global variables (and list of all used environment variables)
-APP_VERSION   = require('./package').version
-APP_STARTED   = new Date().toISOString()
-APP_DEBUG     = process.env.DEBUG
-APP_PORT      = process.env.PORT || 3000
+APP_VERSION = require('./package').version
+APP_STARTED = new Date().toISOString()
+APP_PORT    = process.env.PORT || 3000
 
 
 
@@ -60,7 +58,7 @@ express()
             started: APP_STARTED
         })
 
-        if(err.status !== 404) debug(err)
+        if(err.status !== 404) console.log(err)
     })
 
     // start server
@@ -68,4 +66,4 @@ express()
 
 
 
-debug('Started at port %s', APP_PORT)
+console.log('Started at port ' + APP_PORT)
