@@ -33,15 +33,13 @@ express()
                     }
                     while (records.hasNext()) {
                         var r = records.next()
-                        if(!r || !r._record) {
-                            resultset.size = 0
-                            continue
-                        }
+                        if(!r) continue
+                        if(!r._record) continue
                         results.push(r.json)
                     }
                     res.send({
                         result: results,
-                        count: resultset.size,
+                        count: results.length,
                         version: APP_VERSION,
                         started: APP_STARTED
                     })
