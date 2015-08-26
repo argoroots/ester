@@ -26,6 +26,7 @@ express()
                     next(err)
                     return
                 }
+                console.log(resultset.size)
                 if(resultset.size === 0) {
                     res.send({
                         result: [],
