@@ -11,10 +11,18 @@ APP_STARTED = new Date().toISOString()
 APP_PORT    = process.env.PORT || 3000
 
 
+function setValue(a, v) {
+    if(!a) a = []
+    if(a.indexOf(v) < 0) {
+        a.push(v)
+    }
+    return a
+}
+
 
 express()
     // routes mapping
-    .use('/', function(req, res, next) {
+    .use('/:type', function(req, res, next) {
         var query = req.query.q
         var results = []
 
@@ -35,7 +43,19 @@ express()
                         var r = records.next()
                         if(!r) continue
                         if(!r._record) continue
-                        results.push(r.json)
+                        if(req.params.type === 'simple') {
+                            fields = {}
+                            for(k1 in r.json.fields) {
+                                for(k2 in r.json.fields[k1]) {
+                                    for(k3 in r.json.fields[k1][k2].subfields)
+                                        fields[k2] = setValue(fields[k2], r.json.fields[k1][k2].subfields[k3])
+                                    }
+                                }
+                            }
+                            results.push(fields)
+                        } else {
+                            results.push(r.json)
+                        }
                     }
                     res.send({
                         result: results,
