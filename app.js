@@ -44,16 +44,18 @@ express()
                         if(!r) continue
                         if(!r._record) continue
                         if(req.params.type === 'simple') {
-                            fields = {}
+                            var tags = {}
                             for(k1 in r.json.fields) {
-                                for(k2 in r.json.fields[k1]) {
-                                    if(!fields[k2]) fields[k2] = {}
-                                    for(k3 in r.json.fields[k1][k2].subfields) {
-                                        if(!fields[k2][k3]) fields[k2][k3] = {}
-                                        for(k4 in r.json.fields[k1][k2].subfields[k3]) {
-                                            fields[k2][k3][k4] = setValue(fields[k2][k3][k4], r.json.fields[k1][k2].subfields[k3][k4])
+                                for(k2 in r.json.fields[k1]) { //tags
+                                    var values = []
+                                    for(k3 in r.json.tags[k1][k2].subfields) { //subfields
+                                        if(!values[k3]) values[k3] = {}
+                                        for(k4 in r.json.tags[k1][k2].subfields[k3]) { //values
+                                            values[k4] = setValue(values[k4], r.json.tags[k1][k2].subfields[k3][k4])
                                         }
                                     }
+                                    if(!tags[k2]) tags[k2] = []
+                                    tags[k2].push(values)
                                 }
                             }
                             results.push(fields)
