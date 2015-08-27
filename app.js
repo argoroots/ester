@@ -56,6 +56,8 @@ express()
                                 }
                             }
                             results.push(fields)
+                        } else if(req.params.type === 'raw') {
+                            results.push(r.raw)
                         } else {
                             results.push(r.json)
                         }
