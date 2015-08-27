@@ -48,7 +48,7 @@ express()
                             for(k1 in r.json.fields) {
                                 for(k2 in r.json.fields[k1]) {
                                     for(k3 in r.json.fields[k1][k2].subfields) {
-                                        for(k4 in r.json.fields[k1][k2].subfields[k3])
+                                        for(k4 in r.json.fields[k1][k2].subfields[k3]) {
                                             fields[k2][k4] = setValue(fields[k2], r.json.fields[k1][k2].subfields[k3][k4])
                                         }
                                     }
