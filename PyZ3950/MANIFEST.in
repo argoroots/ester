@@ -1,9 +1,0 @@
-include CHANGELOG
-include TODO
-include header
-include footer
-include mkdoc.py
-include vers.py
-graft example
-graft tools
-graft compiler

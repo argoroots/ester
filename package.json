@@ -1,0 +1,27 @@
+{
+    "private": true,
+    "name": "entu-ester",
+    "version": "0.2.0",
+    "description": "ester.ee proxy for Entu.ee",
+    "homepage": "https://github.com/argoroots/entu-ester",
+    "author": "Argo Roots <argo@roots.ee>",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/argoroots/entu-ester.git"
+    },
+    "bugs": {
+        "url": "https://github.com/argoroots/entu-ester/issues"
+    },
+    "scripts": {
+        "start": "node ./master.js"
+    },
+    "engines": {
+        "node": "0.12.x"
+    },
+    "dependencies": {
+        "cluster": "0.x",
+        "express": "4.x",
+        "newrelic": "1.x",
+        "node-zoom": "0.x"
+    }
+}
