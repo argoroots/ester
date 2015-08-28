@@ -57,7 +57,7 @@ function concatedJson(marc) {
                 }
             }
 
-            op.push(tags, parseInt(k2), value)
+            if(value.trim()) op.push(tags, parseInt(k2), value.trim())
         }
     }
     return tags
