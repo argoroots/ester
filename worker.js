@@ -180,11 +180,12 @@ express()
                             results.push(concatJson(r.json))
                         } else if(req.params.type === 'json') {
                             results.push(r.json)
-                        } else if(req.params.type === 'marc') {
-                            console.log(r.render)
-                            results.push(r.render)
                         } else if(req.params.type === 'raw') {
                             results.push(r.raw)
+                        } else if(req.params.type === 'marc') {
+                            res.set('Content-Type', 'text/plain; charset=utf-8')
+                            res.send(r.render)
+                            return
                         } else {
                             return res.redirect('/simple?q=' + req.query.q)
                         }
