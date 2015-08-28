@@ -95,8 +95,7 @@ function humanJson(marc) {
     for(k1 in mapping) { //tags
         if(!op.has(marc, k1)) continue
         for(k2 in op.get(marc, [k1, 'fields'], [])) { //subfields
-            if(k1 == 700) {
-                console.log(op.get(marc, [k1, 'fields', k2]))
+            if(k1 === '700') {
                 op.push(tags, op.get(authormapping, op.get(marc, [k1, 'fields', k2, 'e'])), op.get(marc, [k1, 'fields', k2, 'a']))
             } else {
                 for(k3 in op.get(mapping, k1, {})) {
