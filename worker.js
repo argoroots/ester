@@ -14,6 +14,12 @@ APP_PORT    = process.env.PORT || 3000
 
 
 
+function uniqueArray(value, index, self) {
+    return self.indexOf(value) === index
+}
+
+
+
 function simpleJson(marc) {
     var tags = {
         leader: op.get(marc, 'leader')
@@ -124,10 +130,9 @@ function humanJson(marc) {
         if(!op.has(marc, k1)) continue
         for(k2 in op.get(marc, [k1, 'fields'], [])) { //subfields
             for(k3 in op.get(mapping, k1, {})) {
-                if(op.has(marc, [k1, 'fields', k2, k3])) {
-                    for(k4 in op.get(marc, [k1, 'fields', k2, k3], [])) {
-                        op.push(tags, op.get(mapping, [k1, k3]), op.get(marc, [k1, 'fields', k2, k3, k4]))
-                    }
+                if(!op.has(marc, [k1, 'fields', k2, k3])) continue
+                for(k4 in op.get(marc, [k1, 'fields', k2, k3], [])) {
+                    op.push(tags, op.get(mapping, [k1, k3]), op.get(marc, [k1, 'fields', k2, k3, k4]))
                 }
             }
         }
@@ -136,6 +141,9 @@ function humanJson(marc) {
         for(a2 in op.get(marc, [700, 'fields', a1, 'a'], [])) {
             op.push(tags, op.get(authormapping, op.get(marc, [700, 'fields', a1, 'e'])), op.get(marc, [700, 'fields', a1, 'a', a2]))
         }
+    }
+    for(k in tags) {
+        tags[k] = tags[k].filter(uniqueArray)
     }
     return tags
 }
