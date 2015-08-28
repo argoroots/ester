@@ -30,7 +30,7 @@ function simpleJson(marc) {
                 }
             }
 
-            op.push(tags, [k2, 'fields'], values)
+            op.push(tags, ['' + k2, 'fields'], values)
         }
     }
     return tags
@@ -106,7 +106,9 @@ function humanJson(marc) {
         }
     }
     for(a1 in op.get(marc, [700, 'fields'], [])) { //authors
-        op.push(tags, op.get(authormapping, op.get(marc, [700, 'fields', a1, 'e'])), op.get(marc, [700, 'fields', a1, 'a']))
+        for(a2 in op.get(marc, [700, 'fields', a1, 'a'], [])) {
+            op.push(tags, op.get(authormapping, op.get(marc, [700, 'fields', a1, 'e'])), op.get(marc, [700, 'fields', a1, 'a', a2]))
+        }
     }
     return tags
 }
