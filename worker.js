@@ -2,6 +2,7 @@ if(process.env.NEW_RELIC_LICENSE_KEY) require('newrelic')
 
 var express = require('express')
 var zoom    = require('node-zoom')
+var op      = require('object-path')
 
 
 
@@ -12,32 +13,23 @@ APP_PORT    = process.env.PORT || 3000
 
 
 
-function setValue(array, value) {
-    if(!array) array = []
-    if(array.indexOf(value) < 0) {
-        array.push(value)
+function simpleJson(marc) {
+    var tags = {
+        leader: op.get(marc, 'leader')
     }
-    return array
-}
-
-
-
-function simpleJson(marc_json) {
-    var tags = {leader: marc_json.leader}
-    for(k1 in marc_json.fields) {
-        for(k2 in marc_json.fields[k1]) { //tags
-            if(!tags[k2]) tags[k2] = {fields: []}
-            if(marc_json.fields[k1][k2].ind1 !== ' ') tags[k2].ind1 = marc_json.fields[k1][k2].ind1
-            if(marc_json.fields[k1][k2].ind2 !== ' ') tags[k2].ind2 = marc_json.fields[k1][k2].ind2
+    for(k1 in op.get(marc, 'fields', [])) {
+        for(k2 in op.get(marc, ['fields', k1], [])) { //tags
+            if(op.get(marc, ['fields', k1, k2, 'ind1'], '').trim()) op.set(tags, [k2, 'ind1'], op.get(marc, ['fields', k1, k2, 'ind1']))
+            if(op.get(marc, ['fields', k1, k2, 'ind2'], '').trim()) op.set(tags, [k2, 'ind2'], op.get(marc, ['fields', k1, k2, 'ind2']))
 
             var values = {}
-            for(k3 in marc_json.fields[k1][k2].subfields) { //subfields
-                for(k4 in marc_json.fields[k1][k2].subfields[k3]) { //values
-                    values[k4] = setValue(values[k4], marc_json.fields[k1][k2].subfields[k3][k4])
+            for(k3 in op.get(marc, ['fields', k1, k2, 'subfields'], [])) { //subfields
+                for(k4 in op.get(marc, ['fields', k1, k2, 'subfields', k3], [])) { //values
+                    op.push(values, 'k4', op.get(marc, ['fields', k1, k2, 'subfields', k3, k4]))
                 }
             }
 
-            tags[k2].fields.push(values)
+            op.push(tags, [k2, 'fields'], values)
         }
     }
     return tags
