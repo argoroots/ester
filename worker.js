@@ -77,12 +77,9 @@ function humanJson(marc) {
     var tags = {}
     for(k1 in op.get(marc, 'fields', [])) {
         for(k2 in op.get(marc, ['fields', k1], [])) { //tags
-            if(op.get(marc, ['fields', k1, k2, 'ind1'], '').trim()) op.set(tags, [k2, 'ind1'], op.get(marc, ['fields', k1, k2, 'ind1']))
-            if(op.get(marc, ['fields', k1, k2, 'ind2'], '').trim()) op.set(tags, [k2, 'ind2'], op.get(marc, ['fields', k1, k2, 'ind2']))
-
             for(k3 in op.get(marc, ['fields', k1, k2, 'subfields'], [])) { //subfields
                 for(k4 in op.get(marc, ['fields', k1, k2, 'subfields', k3], [])) { //values
-                    op.push(tags, op.get(mapping, [k2, k4], k2 + k4), op.get(marc, ['fields', k1, k2, 'subfields', k3, k4]))
+                    if(op.has(mapping, [k2, k4])) op.push(tags, op.get(mapping, [k2, k4]), op.get(marc, ['fields', k1, k2, 'subfields', k3, k4]))
                 }
             }
         }
