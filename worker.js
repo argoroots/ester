@@ -92,9 +92,17 @@ function humanJson(marc) {
     marc = simpleJson(marc)
 
     var tags = {}
-    for(k1 in op.get(marc, {})) { //tags
+    for(k1 in mapping) { //tags
+        if(!op.has(marc, k1)) continue
         for(k2 in op.get(marc, [k1, 'fields'], [])) { //subfields
-            if(op.has(mapping, [k1, k2])) {
+            for(k3 in op.get(mapping, k1, {})) {
+                if(op.has(marc, [k1, 'fields', k2, k3])) {
+                    op.push(tags, op.get(mapping, [k1, k3]), op.get(marc, [k1, 'fields', k2, k3]))
+                } else if(k1 === 700 && op.has(authormapping, op.get(marc, [k1, 'fields', k2, 'e']))) {
+                    op.push(tags, op.get(authormapping, op.get(marc, [k1, 'fields', k2, 'e'])), op.get(marc, [k1, 'fields', k2, 'a']))
+                }
+            }
+            if(op.has(marc, [k1, k2])) {
                 op.push(tags, op.get(mapping, [k1, k2]), op.get(marc, [k1, 'fields', k2]))
             } else if(k1 === 700 && op.get(authormapping, op.get(marc, [k1, 'fields', k2, 'e']))) {
                 op.push(tags, op.get(authormapping, op.get(marc, [k1, 'fields', k2, 'e'])), op.get(marc, [k1, 'fields', k2, 'a']))
