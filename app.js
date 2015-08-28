@@ -41,21 +41,25 @@ express()
                     }
                     while (records.hasNext()) {
                         var r = records.next()
+
                         if(!r) continue
                         if(!r._record) continue
+
                         if(req.params.type === 'simple') {
                             var tags = {}
                             for(k1 in r.json.fields) {
                                 for(k2 in r.json.fields[k1]) { //tags
+                                    if(!tags[k2]) tags[k2] = {subfields: []}
+                                    if(r.json.fields[k1][k2].ind1 !== ' ') tags[k2].ind1 = r.json.fields[k1][k2].ind1
+                                    if(r.json.fields[k1][k2].ind2 !== ' ') tags[k2].ind2 = r.json.fields[k1][k2].ind2
+
                                     var values = {}
                                     for(k3 in r.json.fields[k1][k2].subfields) { //subfields
                                         for(k4 in r.json.fields[k1][k2].fields[k3]) { //values
                                             values[k4] = setValue(values[k4], r.json.fields[k1][k2].subfields[k3][k4])
                                         }
                                     }
-                                    if(!tags[k2]) tags[k2] = {subfields: []}
-                                    if(r.json.fields[k1][k2].ind1 !== ' ') tags[k2].ind1 = r.json.fields[k1][k2].ind1
-                                    if(r.json.fields[k1][k2].ind2 !== ' ') tags[k2].ind2 = r.json.fields[k1][k2].ind2
+
                                     tags[k2].subfields.push(values)
                                 }
                             }
