@@ -37,6 +37,66 @@ function simpleJson(marc) {
 
 
 
+function humanJson(marc) {
+    var mapping = { // http://www.loc.gov/marc/bibliographic
+        020: {a: 'isn'},
+        022: {a: 'isn'},
+        041: {a: 'language',
+              h: 'original-language'},
+        072: {a: 'udc'},
+        080: {a: 'udc'},
+        100: {a: 'author'},
+        245: {a: 'title',
+              b: 'subtitle',
+              p: 'subtitle',
+              n: 'number'},
+        250: {a: 'edition'},
+        260: {a: 'publishing-place',
+              b: 'publisher',
+              c: 'publishing-date'},
+        300: {a: 'pages',
+              c: 'dimensions'},
+        440: {a: 'series',
+              p: 'series',
+              n: 'series-number',
+              v: 'series-number'},
+        500: {a: 'notes'},
+        501: {a: 'notes'},
+        502: {a: 'notes'},
+        504: {a: 'notes'},
+        505: {a: 'notes'},
+        520: {a: 'notes'},
+        525: {a: 'notes'},
+        530: {a: 'notes'},
+        650: {a: 'tag'},
+        655: {a: 'tag'},
+        710: {a: 'publisher'},
+        907: {a: 'ester-id'},
+    }
+
+    var tags = {
+        leader: op.get(marc, 'leader')
+    }
+    for(k1 in op.get(marc, 'fields', [])) {
+        for(k2 in op.get(marc, ['fields', k1], [])) { //tags
+            if(op.get(marc, ['fields', k1, k2, 'ind1'], '').trim()) op.set(tags, [k2, 'ind1'], op.get(marc, ['fields', k1, k2, 'ind1']))
+            if(op.get(marc, ['fields', k1, k2, 'ind2'], '').trim()) op.set(tags, [k2, 'ind2'], op.get(marc, ['fields', k1, k2, 'ind2']))
+
+            var values = {}
+            for(k3 in op.get(marc, ['fields', k1, k2, 'subfields'], [])) { //subfields
+                for(k4 in op.get(marc, ['fields', k1, k2, 'subfields', k3], [])) { //values
+                    op.push(values, op.get(mapping, [k2, k4], '_' + k4), op.get(marc, ['fields', k1, k2, 'subfields', k3, k4]))
+                }
+            }
+
+            op.push(tags, [k2, 'fields'], values)
+        }
+    }
+    return tags
+}
+
+
+
 express()
     // routes mapping
     .use('/:type', function(req, res, next) {
@@ -59,7 +119,9 @@ express()
                         if(!r) continue
                         if(!r._record) continue
 
-                        if(req.params.type === 'simple') {
+                        if(req.params.type === 'human') {
+                            results.push(humanJson(r.json))
+                        } else if(req.params.type === 'simple') {
                             results.push(simpleJson(r.json))
                         } else if(req.params.type === 'json') {
                             results.push(r.json)
