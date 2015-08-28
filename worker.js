@@ -39,8 +39,8 @@ function simpleJson(marc) {
 
 function humanJson(marc) {
     var mapping = { // http://www.loc.gov/marc/bibliographic
-        020: {a: 'isn'},
-        022: {a: 'isn'},
+        020: {a: 'isbn'},
+        022: {a: 'issn'},
         041: {a: 'language',
               h: 'original-language'},
         072: {a: 'udc'},
@@ -73,14 +73,31 @@ function humanJson(marc) {
         710: {a: 'publisher'},
         907: {a: 'ester-id'},
     }
+    var authormapping = {
+        'fotograaf':       'photographer',
+        'helilooja':       'composer',
+        'illustreerija':   'illustrator',
+        'järelsõna autor': 'epilogue-author',
+        'koostaja':        'compiler',
+        'kujundaja':       'designer',
+        'osatäitja':       'actor',
+        'produtsent':      'producer',
+        'režissöör':       'director',
+        'stsenarist':      'screenwriter',
+        'toimetaja':       'editor',
+        'tolkija':         'translator',
+        'tõlkija':         'translator',
+    }
+
+    marc = simpleJson(marc)
 
     var tags = {}
-    for(k1 in op.get(marc, 'fields', [])) {
-        for(k2 in op.get(marc, ['fields', k1], [])) { //tags
-            for(k3 in op.get(marc, ['fields', k1, k2, 'subfields'], [])) { //subfields
-                for(k4 in op.get(marc, ['fields', k1, k2, 'subfields', k3], [])) { //values
-                    if(op.has(mapping, [k2, k4])) op.push(tags, op.get(mapping, [k2, k4]), op.get(marc, ['fields', k1, k2, 'subfields', k3, k4]))
-                }
+    for(k1 in op.get(marc, {})) { //tags
+        for(k2 in op.get(marc, [k1, 'fields'], [])) { //subfields
+            if(op.has(mapping, [k1, k2])) {
+                op.push(tags, op.get(mapping, [k1, k2]), op.get(marc, [k1, 'fields', k2]))
+            } else if(k1 === 700 && op.get(authormapping, op.get(marc, [k1, 'fields', k2, 'e']))) {
+                op.push(tags, op.get(authormapping, op.get(marc, [k1, 'fields', k2, 'e'])), op.get(marc, [k1, 'fields', k2, 'a']))
             }
         }
     }
