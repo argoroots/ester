@@ -11,13 +11,38 @@ APP_STARTED = new Date().toISOString()
 APP_PORT    = process.env.PORT || 3000
 
 
-function setValue(a, v) {
-    if(!a) a = []
-    if(a.indexOf(v) < 0) {
-        a.push(v)
+
+function setValue(array, value) {
+    if(!array) array = []
+    if(array.indexOf(value) < 0) {
+        array.push(value)
     }
-    return a
+    return array
 }
+
+
+
+function simpleJson(marc_json) {
+    var tags = {leader: marc_json.leader}
+    for(k1 in marc_json.fields) {
+        for(k2 in marc_json.fields[k1]) { //tags
+            if(!tags[k2]) tags[k2] = {fields: []}
+            if(marc_json.fields[k1][k2].ind1 !== ' ') tags[k2].ind1 = marc_json.fields[k1][k2].ind1
+            if(marc_json.fields[k1][k2].ind2 !== ' ') tags[k2].ind2 = marc_json.fields[k1][k2].ind2
+
+            var values = {}
+            for(k3 in marc_json.fields[k1][k2].subfields) { //subfields
+                for(k4 in marc_json.fields[k1][k2].subfields[k3]) { //values
+                    values[k4] = setValue(values[k4], marc_json.fields[k1][k2].subfields[k3][k4])
+                }
+            }
+
+            tags[k2].fields.push(values)
+        }
+    }
+    return tags
+}
+
 
 
 express()
@@ -26,21 +51,16 @@ express()
         var query = req.query.q
         var results = []
 
-        if(!query) next(new Error('No query parameter (q)!'))
+        if(!query) return next(new Error('No query parameter (q)!'))
 
         zoom.connection('193.40.4.242:212/INNOPAC')
             .set('preferredRecordSyntax', 'usmarc')
             .query('@or @attr 1=4 "' + query + '" @or @attr 1=7 "' + query + '" @attr 1=12 "' + query + '"')
             .search(function(err, resultset) {
-                if(err) {
-                    next(err)
-                    return
-                }
+                if(err) return next(err)
                 resultset.getRecords(0, resultset.size, function(err, records) {
-                    if(err) {
-                        next(err)
-                        return
-                    }
+                    if(err) return next(err)
+
                     while (records.hasNext()) {
                         var r = records.next()
 
@@ -48,24 +68,7 @@ express()
                         if(!r._record) continue
 
                         if(req.params.type === 'simple') {
-                            var tags = {leader: r.json.leader}
-                            for(k1 in r.json.fields) {
-                                for(k2 in r.json.fields[k1]) { //tags
-                                    if(!tags[k2]) tags[k2] = {fields: []}
-                                    if(r.json.fields[k1][k2].ind1 !== ' ') tags[k2].ind1 = r.json.fields[k1][k2].ind1
-                                    if(r.json.fields[k1][k2].ind2 !== ' ') tags[k2].ind2 = r.json.fields[k1][k2].ind2
-
-                                    var values = {}
-                                    for(k3 in r.json.fields[k1][k2].subfields) { //subfields
-                                        for(k4 in r.json.fields[k1][k2].subfields[k3]) { //values
-                                            values[k4] = setValue(values[k4], r.json.fields[k1][k2].subfields[k3][k4])
-                                        }
-                                    }
-
-                                    tags[k2].fields.push(values)
-                                }
-                            }
-                            results.push(tags)
+                            results.push(simpleJson(r.json))
                         } else if(req.params.type === 'json') {
                             results.push(r.json)
                         } else if(req.params.type === 'raw') {
