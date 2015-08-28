@@ -181,6 +181,7 @@ express()
                         } else if(req.params.type === 'json') {
                             results.push(r.json)
                         } else if(req.params.type === 'marc') {
+                            console.log(r.render)
                             results.push(r.render)
                         } else if(req.params.type === 'raw') {
                             results.push(r.raw)
