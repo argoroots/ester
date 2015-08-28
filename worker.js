@@ -44,13 +44,12 @@ function concatedJson(marc) {
     }
     for(k1 in op.get(marc, 'fields', [])) {
         for(k2 in op.get(marc, ['fields', k1], [])) { //tags
-            if(op.get(marc, ['fields', k1, k2, 'ind1'], '').trim()) op.set(tags, [parseInt(k2), 'ind1'], op.get(marc, ['fields', k1, k2, 'ind1']))
-            if(op.get(marc, ['fields', k1, k2, 'ind2'], '').trim()) op.set(tags, [parseInt(k2), 'ind2'], op.get(marc, ['fields', k1, k2, 'ind2']))
-
             var value = ''
             for(k3 in op.get(marc, ['fields', k1, k2, 'subfields'], [])) { //subfields
                 for(k4 in op.get(marc, ['fields', k1, k2, 'subfields', k3], [])) { //values
-                    if(['v', 'x', 'y', 'z'].indexOf(k4) > 0) {
+                    if(k4 === '6') {
+                        continue
+                    } else if(['v', 'x', 'y', 'z'].indexOf(k4) > 0) {
                         value += ' -- ' + op.get(marc, ['fields', k1, k2, 'subfields', k3, k4])
                     } else {
                         value += ' ' + op.get(marc, ['fields', k1, k2, 'subfields', k3, k4])
@@ -58,7 +57,7 @@ function concatedJson(marc) {
                 }
             }
 
-            op.push(tags, [parseInt(k2), 'values'], value)
+            op.push(tags, parseInt(k2), value)
         }
     }
     return tags
