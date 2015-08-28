@@ -25,7 +25,7 @@ function simpleJson(marc) {
             var values = {}
             for(k3 in op.get(marc, ['fields', k1, k2, 'subfields'], [])) { //subfields
                 for(k4 in op.get(marc, ['fields', k1, k2, 'subfields', k3], [])) { //values
-                    op.push(values, 'k4', op.get(marc, ['fields', k1, k2, 'subfields', k3, k4]))
+                    op.push(values, k4, op.get(marc, ['fields', k1, k2, 'subfields', k3, k4]))
                 }
             }
 
