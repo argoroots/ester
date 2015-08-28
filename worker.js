@@ -3,6 +3,7 @@ if(process.env.NEW_RELIC_LICENSE_KEY) require('newrelic')
 var express = require('express')
 var zoom    = require('node-zoom')
 var op      = require('object-path')
+var yaml    = require('js-yaml')
 
 
 
@@ -146,12 +147,19 @@ express()
                             return res.redirect('/simple?q=' + req.query.q)
                         }
                     }
-                    res.send({
+                    var result = {
                         result: results,
                         count: results.length,
                         version: APP_VERSION,
                         started: APP_STARTED
-                    })
+                    }
+
+                    if(req.query.format === 'yaml') {
+                        res.set('Content-Type', 'text/x-yaml; charset=utf-8')
+                        res.send(yaml.safeDump(result, {sortKeys: true, indent: 4}))
+                    } else {
+                        res.send(result)
+                    }
                 })
             })
     })

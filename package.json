@@ -21,6 +21,7 @@
     "dependencies": {
         "cluster": "0.x",
         "express": "4.x",
+        "js-yaml": "3.x",
         "newrelic": "1.x",
         "node-zoom": "0.x",
         "object-path": "0.x"
