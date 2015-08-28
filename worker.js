@@ -38,6 +38,34 @@ function simpleJson(marc) {
 
 
 
+function concatedJson(marc) {
+    var tags = {
+        leader: op.get(marc, 'leader')
+    }
+    for(k1 in op.get(marc, 'fields', [])) {
+        for(k2 in op.get(marc, ['fields', k1], [])) { //tags
+            if(op.get(marc, ['fields', k1, k2, 'ind1'], '').trim()) op.set(tags, [parseInt(k2), 'ind1'], op.get(marc, ['fields', k1, k2, 'ind1']))
+            if(op.get(marc, ['fields', k1, k2, 'ind2'], '').trim()) op.set(tags, [parseInt(k2), 'ind2'], op.get(marc, ['fields', k1, k2, 'ind2']))
+
+            var value = ''
+            for(k3 in op.get(marc, ['fields', k1, k2, 'subfields'], [])) { //subfields
+                for(k4 in op.get(marc, ['fields', k1, k2, 'subfields', k3], [])) { //values
+                    if(['v', 'x', 'y', 'z'].indexOf(k4) > 0) {
+                        value += ' -- ' + op.get(marc, ['fields', k1, k2, 'subfields', k3, k4])
+                    } else {
+                        value += ' ' + op.get(marc, ['fields', k1, k2, 'subfields', k3, k4])
+                    }
+                }
+            }
+
+            op.push(tags, [parseInt(k2), 'values'], value)
+        }
+    }
+    return tags
+}
+
+
+
 function humanJson(marc) {
     var mapping = { // http://www.loc.gov/marc/bibliographic
          20: {a: 'isbn'},
@@ -141,6 +169,8 @@ express()
                             results.push(humanJson(r.json))
                         } else if(req.params.type === 'simple') {
                             results.push(simpleJson(r.json))
+                        } else if(req.params.type === 'concated') {
+                            results.push(concatedJson(r.json))
                         } else if(req.params.type === 'json') {
                             results.push(r.json)
                         } else if(req.params.type === 'raw') {
