@@ -180,6 +180,8 @@ express()
                             results.push(concatJson(r.json))
                         } else if(req.params.type === 'json') {
                             results.push(r.json)
+                        } else if(req.params.type === 'marc') {
+                            results.push(r.render)
                         } else if(req.params.type === 'raw') {
                             results.push(r.raw)
                         } else {
