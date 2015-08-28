@@ -26,6 +26,8 @@ express()
         var query = req.query.q
         var results = []
 
+        if(!query) next(new Error('No query parameter (q)!'))
+
         zoom.connection('193.40.4.242:212/INNOPAC')
             .set('preferredRecordSyntax', 'usmarc')
             .query('@or @attr 1=4 "' + query + '" @or @attr 1=7 "' + query + '" @attr 1=12 "' + query + '"')
@@ -64,10 +66,12 @@ express()
                                 }
                             }
                             results.push(tags)
+                        } else if(req.params.type === 'json') {
+                            results.push(r.json)
                         } else if(req.params.type === 'raw') {
                             results.push(r.raw)
                         } else {
-                            results.push(r.json)
+                            return res.redirect('/simple?q=' + req.query.q)
                         }
                     }
                     res.send({
