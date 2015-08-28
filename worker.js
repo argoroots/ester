@@ -44,7 +44,7 @@ function simpleJson(marc) {
 
 
 
-function concatedJson(marc) {
+function concatJson(marc) {
     var tags = {
         leader: op.get(marc, 'leader')
     }
@@ -176,8 +176,8 @@ express()
                             results.push(humanJson(r.json))
                         } else if(req.params.type === 'simple') {
                             results.push(simpleJson(r.json))
-                        } else if(req.params.type === 'concated') {
-                            results.push(concatedJson(r.json))
+                        } else if(req.params.type === 'concat') {
+                            results.push(concatJson(r.json))
                         } else if(req.params.type === 'json') {
                             results.push(r.json)
                         } else if(req.params.type === 'raw') {
