@@ -198,7 +198,7 @@ express()
                     if(req.params.type === 'marc') {
                         res.set('Content-Type', 'text/plain; charset=utf-8')
                         res.send(results.join('\n'))
-                    else if(req.query.format === 'yaml') {
+                    } else if(req.query.format === 'yaml') {
                         res.set('Content-Type', 'text/x-yaml; charset=utf-8')
                         res.send(yaml.safeDump(result, {sortKeys: true, indent: 4}))
                     } else {
