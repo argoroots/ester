@@ -185,7 +185,6 @@ express()
                         } else if(req.params.type === 'marc') {
                             res.set('Content-Type', 'text/plain; charset=utf-8')
                             res.send(r.render)
-                            return
                         } else {
                             return res.redirect('/simple?q=' + req.query.q)
                         }
