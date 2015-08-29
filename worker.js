@@ -183,8 +183,7 @@ express()
                         } else if(req.params.type === 'raw') {
                             results.push(r.raw)
                         } else if(req.params.type === 'marc') {
-                            res.set('Content-Type', 'text/plain; charset=utf-8')
-                            res.send(r.render)
+                            results.push(r.render)
                         } else {
                             return res.redirect('/simple?q=' + req.query.q)
                         }
@@ -196,7 +195,10 @@ express()
                         started: APP_STARTED
                     }
 
-                    if(req.query.format === 'yaml') {
+                    if(req.params.type === 'marc') {
+                        res.set('Content-Type', 'text/plain; charset=utf-8')
+                        res.send(result.join('\n'))
+                    else if(req.query.format === 'yaml') {
                         res.set('Content-Type', 'text/x-yaml; charset=utf-8')
                         res.send(yaml.safeDump(result, {sortKeys: true, indent: 4}))
                     } else {
