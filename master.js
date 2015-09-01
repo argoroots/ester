@@ -15,11 +15,11 @@ for (var i = 0; i < cpuCount; i += 1) {
 
 // Listen for new workers
 cluster.on('online', function(worker) {
-    console.log('Worker ' + worker.id + ' started')
+    console.log(new Date().toString() + ' worker ' + worker.id + ' started')
 })
 
 // Listen for dying workers nad replace the dead worker, we're not sentimental
 cluster.on('exit', function(worker) {
-    console.log('Worker ' + worker.id + ' died')
+    console.log(new Date().toString() + ' worker ' + worker.id + ' died')
     cluster.fork()
 })
