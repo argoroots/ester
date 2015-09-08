@@ -238,11 +238,11 @@ express()
         var format = req.query.f
         if(['human', 'simple', 'concat', 'json', 'marc'].indexOf(format) === -1) format = 'human'
 
-        var id = req.params.q
+        var id = req.params.id
         if(!id) return next(new Error('No ID!'))
 
         var filename = path.join(APP_TMPDIR, id + '.json')
-        if(!fs.existsSync(filename)) return next(new Error('Invalid ID!'))
+        if(!id.matches('[a-fA-F0-9]{32}') || !fs.existsSync(filename)) return next(new Error('Invalid ID!'))
 
         var full_result = require(filename)
 
