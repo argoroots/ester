@@ -19,6 +19,7 @@ fs.existsSync(APP_TMPDIR) || fs.mkdirSync(APP_TMPDIR)
 
 
 express()
+    // routes mapping
     .use('/search', require('./routes/search'))
     .use('/item', require('./routes/item'))
 
