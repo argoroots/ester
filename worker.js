@@ -173,7 +173,7 @@ express()
         if(['human', 'simple', 'concat', 'json', 'marc'].indexOf(format) === -1) format = 'human'
 
         var query = req.query.q
-        if(!query) return next(new Error('No query parameter (q)!'))
+        if(!query) return next(new Error('No query parameter (q)'))
 
         zoom.connection('193.40.4.242:212/INNOPAC')
             .set('preferredRecordSyntax', 'usmarc')
@@ -239,10 +239,10 @@ express()
         if(['human', 'simple', 'concat', 'json', 'marc'].indexOf(format) === -1) format = 'human'
 
         var id = req.params.id
-        if(!id) return next(new Error('No ID!'))
+        if(!id) return next(new Error('No ID'))
 
         var filename = path.join(APP_TMPDIR, id + '.json')
-        if(!id.matches('[a-fA-F0-9]{32}') || !fs.existsSync(filename)) return next(new Error('Invalid ID!'))
+        if(!id.matches('[a-fA-F0-9]{32}') || !fs.existsSync(filename)) return next(new Error('Invalid ID'))
 
         var full_result = require(filename)
 
