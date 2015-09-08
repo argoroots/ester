@@ -4,6 +4,8 @@ var express = require('express')
 var zoom    = require('node-zoom')
 var op      = require('object-path')
 var md5     = require('md5')
+var path    = require('path')
+var fs      = require('fs')
 
 
 
@@ -11,6 +13,11 @@ var md5     = require('md5')
 APP_VERSION = require('./package').version
 APP_STARTED = new Date().toISOString()
 APP_PORT    = process.env.PORT || 3000
+APP_TMPDIR  = process.env.TMPDIR || path.join(__dirname, 'tmp')
+
+
+
+fs.existsSync(APP_TMPDIR) || fs.mkdirSync(APP_TMPDIR)
 
 
 
@@ -202,6 +209,13 @@ express()
                             return res.redirect('/simple?q=' + req.query.q)
                         }
                         result._id = id
+
+                        var filename = path.join(APP_TMPDIR, id)
+                        if(!fs.existsSync(filename)) {
+                            fs.writeFile(filename, r.raw, function(err) {
+                                if(err) return next(err)
+                            })
+                        }
 
                         if(req.params.type === 'marc') {
                             results.push(result.marc)

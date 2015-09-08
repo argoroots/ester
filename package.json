@@ -1,7 +1,7 @@
 {
     "private": true,
     "name": "entu-ester",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "description": "ester.ee proxy for Entu.ee",
     "homepage": "https://github.com/argoroots/entu-ester",
     "author": "Argo Roots <argo@roots.ee>",
