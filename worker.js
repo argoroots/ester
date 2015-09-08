@@ -211,8 +211,16 @@ express()
                             })
                         }
 
-                        if(format === 'marc') {
-                            results.push(result.marc)
+                        if(format === 'raw') {
+                            results.push({
+                                _id: id,
+                                marc: result.raw
+                            })
+                        } else if(format === 'marc') {
+                            results.push({
+                                _id: id,
+                                marc: result.marc
+                            })
                         } else {
                             var result = full_result[format]
                             result._id = id
