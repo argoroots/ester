@@ -174,31 +174,31 @@ express()
                         if(!r) continue
                         if(!r._record) continue
 
-                        var result = {}
                         if(req.params.type === 'human') {
-                            result = humanJson(r.json)
+                            var result = humanJson(r.json)
                             result._id = md5(r.raw)
                         } else if(req.params.type === 'simple') {
-                            result = simpleJson(r.json)
+                            var result = simpleJson(r.json)
                             result._id = md5(r.raw)
                         } else if(req.params.type === 'concat') {
-                            result = concatJson(r.json)
+                            var result = concatJson(r.json)
                             result._id = md5(r.raw)
                         } else if(req.params.type === 'json') {
-                            result = r.json
+                            var result = r.json
                             result._id = md5(r.raw)
                         } else if(req.params.type === 'raw') {
+                            var result = {}
                             result.marc = r.raw
                             result._id = md5(r.raw)
                         } else if(req.params.type === 'marc') {
-                            result = r.render
+                            var result = r.render
                         } else {
                             return res.redirect('/simple?q=' + req.query.q)
                         }
                         if(req.params.type !== 'marc' && ids.indexOf(result._id) === -1) {
                             ids.push(result._id)
                             results.push(result)
-                        } esle {
+                        } else {
                             results.push(result)
                         }
                     }
