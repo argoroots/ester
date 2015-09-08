@@ -245,6 +245,7 @@ express()
         if(!id.matches('[a-fA-F0-9]{32}') || !fs.existsSync(filename)) return next(new Error('Invalid ID'))
 
         var full_result = require(filename)
+        console.log(full_result)
 
         if(format === 'marc') {
             res.set('Content-Type', 'text/plain; charset=utf-8')
