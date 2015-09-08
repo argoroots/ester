@@ -242,10 +242,9 @@ express()
         if(!id) return next(new Error('No ID'))
 
         var filename = path.join(APP_TMPDIR, id + '.json')
-        if(!id.matches('[a-fA-F0-9]{32}') || !fs.existsSync(filename)) return next(new Error('Invalid ID'))
+        if(!id.match('[a-fA-F0-9]{32}') || !fs.existsSync(filename)) return next(new Error('Invalid ID'))
 
         var full_result = require(filename)
-        console.log(full_result)
 
         if(format === 'marc') {
             res.set('Content-Type', 'text/plain; charset=utf-8')
