@@ -211,16 +211,10 @@ express()
                             })
                         }
 
-                        if(format === 'raw') {
-                            results.push({
-                                _id: id,
-                                marc: result.raw
-                            })
-                        } else if(format === 'marc') {
-                            results.push({
-                                _id: id,
-                                marc: result.marc
-                            })
+                        if(format === 'marc') {
+                            results.push(full_result.marc)
+                        } else if(format === 'raw') {
+                            results.push(full_result.raw)
                         } else {
                             var result = full_result[format]
                             result._id = id
@@ -228,7 +222,7 @@ express()
                         }
                     }
 
-                    if(format === 'marc') {
+                    if(format === 'raw' || format === 'marc') {
                         res.set('Content-Type', 'text/plain; charset=utf-8')
                         res.send(results.join('\n'))
                     } else {
