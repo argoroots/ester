@@ -4,7 +4,7 @@ var fs     = require('fs')
 
 
 
-// get item by id
+// get item by id router
 router.get('/:id', function(req, res, next) {
     var format = req.query.f
     if(['human', 'simple', 'concat', 'json', 'marc'].indexOf(format) === -1) format = 'human'

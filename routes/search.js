@@ -7,12 +7,14 @@ var fs     = require('fs')
 
 
 
+// make unique array - myArray.filter(uniqueArray)
 function uniqueArray(value, index, self) {
     return self.indexOf(value) === index
 }
 
 
 
+// generate simple format from marc
 function simpleJson(marc) {
     var tags = {
         leader: op.get(marc, 'leader')
@@ -41,6 +43,7 @@ function simpleJson(marc) {
 
 
 
+// concat marc subfields to one string
 function concatJson(marc) {
     var tags = {
         leader: op.get(marc, 'leader')
@@ -72,6 +75,7 @@ function concatJson(marc) {
 
 
 
+// generate human readable format from marc
 function humanJson(marc) {
     var mapping = { // http://www.loc.gov/marc/bibliographic
          20: {a: 'isbn'},
@@ -152,7 +156,7 @@ function humanJson(marc) {
 
 
 
-// search items
+// search items router
 router.get('/', function(req, res, next) {
     var format = req.query.f
     if(['human', 'simple', 'concat', 'json', 'marc'].indexOf(format) === -1) format = 'human'
