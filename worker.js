@@ -139,7 +139,7 @@ function humanJson(marc) {
     }
     for(a1 in op.get(marc, [700, 'fields'], [])) { //authors
         for(a2 in op.get(marc, [700, 'fields', a1, 'a'], [])) {
-            op.push(tags, op.get(authormapping, op.get(marc, [700, 'fields', a1, 'e'])), op.get(marc, [700, 'fields', a1, 'a', a2]))
+            op.push(tags, op.get(authormapping, op.get(marc, [700, 'fields', a1, 'e'], ''), op.get(marc, [700, 'fields', a1, 'e'], '')), op.get(marc, [700, 'fields', a1, 'a', a2], ''))
         }
     }
     for(k in tags) {
