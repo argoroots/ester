@@ -55,14 +55,18 @@ function concatJson(marc) {
     for(k1 in op.get(marc, 'fields', [])) {
         for(k2 in op.get(marc, ['fields', k1], [])) { //tags
             var value = ''
-            for(k3 in op.get(marc, ['fields', k1, k2, 'subfields'], [])) { //subfields
-                for(k4 in op.get(marc, ['fields', k1, k2, 'subfields', k3], [])) { //values
-                    if(k4 === '6') {
-                        continue
-                    } else if(['v', 'x', 'y', 'z'].indexOf(k4) > 0) {
-                        value += ' -- ' + op.get(marc, ['fields', k1, k2, 'subfields', k3, k4])
-                    } else {
-                        value += ' ' + op.get(marc, ['fields', k1, k2, 'subfields', k3, k4])
+            if(typeof op.get(marc, ['fields', k1, k2]) === 'string') {
+                value = op.get(marc, ['fields', k1, k2], '')
+            } else {
+                for(k3 in op.get(marc, ['fields', k1, k2, 'subfields'], [])) { //subfields
+                    for(k4 in op.get(marc, ['fields', k1, k2, 'subfields', k3], [])) { //values
+                        if(k4 === '6') {
+                            continue
+                        } else if(['v', 'x', 'y', 'z'].indexOf(k4) > 0) {
+                            value += ' -- ' + op.get(marc, ['fields', k1, k2, 'subfields', k3, k4])
+                        } else {
+                            value += ' ' + op.get(marc, ['fields', k1, k2, 'subfields', k3, k4])
+                        }
                     }
                 }
             }
