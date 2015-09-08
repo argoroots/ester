@@ -191,15 +191,19 @@ express()
                             result.marc = r.raw
                             result._id = md5(r.raw)
                         } else if(req.params.type === 'marc') {
-                            var result = r.render
+                            var result = {}
+                            result.marc = r.render
+                            result._id = md5(r.raw)
                         } else {
                             return res.redirect('/simple?q=' + req.query.q)
                         }
-                        if(req.params.type !== 'marc' && ids.indexOf(result._id) === -1) {
+                        if(ids.indexOf(result._id) === -1) {
                             ids.push(result._id)
-                            results.push(result)
-                        } else {
-                            results.push(result)
+                            if(req.params.type === 'marc') {
+                                results.push(result.marc)
+                            } else {
+                                results.push(result)
+                            }
                         }
                     }
                     var result = {
