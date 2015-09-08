@@ -27,7 +27,7 @@ function simpleJson(marc) {
     for(k1 in op.get(marc, 'fields', [])) {
         for(k2 in op.get(marc, ['fields', k1], [])) { //tags
             if(typeof op.get(marc, ['fields', k1, k2], '') === 'object') {
-                op.push(tags, parseInt(k2)], op.get(marc, ['fields', k1, k2], ''))
+                op.push(tags, parseInt(k2), op.get(marc, ['fields', k1, k2], ''))
                 continue
             }
             if(op.get(marc, ['fields', k1, k2, 'ind1'], '').trim()) op.set(tags, [parseInt(k2), 'ind1'], op.get(marc, ['fields', k1, k2, 'ind1']))
