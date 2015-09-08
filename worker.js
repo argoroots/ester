@@ -26,7 +26,7 @@ function simpleJson(marc) {
     }
     for(k1 in op.get(marc, 'fields', [])) {
         for(k2 in op.get(marc, ['fields', k1], [])) { //tags
-            if(typeof op.get(marc, ['fields', k1, k2], '') === 'object') {
+            if(typeof op.get(marc, ['fields', k1, k2]) === 'string') {
                 op.push(tags, parseInt(k2), op.get(marc, ['fields', k1, k2], ''))
                 continue
             }
