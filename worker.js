@@ -170,7 +170,7 @@ express()
     // routes mapping
     .use('/search', function(req, res, next) {
         var format = req.query.f
-        if(['human', 'simple', 'concat', 'json', 'marc', 'raw'].indexOf(format) === -1) format = 'human'
+        if(['human', 'simple', 'concat', 'json', 'marc'].indexOf(format) === -1) format = 'human'
 
         var query = req.query.q
         if(!query) return next(new Error('No query parameter (q)!'))
@@ -200,8 +200,7 @@ express()
                             simple: simpleJson(r.json),
                             concat: concatJson(r.json),
                             json: r.json,
-                            marc: r.render,
-                            raw: r.raw
+                            marc: r.render
                         }
 
                         var filename = path.join(APP_TMPDIR, id + '.json')
@@ -213,8 +212,6 @@ express()
 
                         if(format === 'marc') {
                             results.push(full_result.marc)
-                        } else if(format === 'raw') {
-                            results.push(full_result.raw)
                         } else {
                             var result = full_result[format]
                             result._id = id
@@ -222,7 +219,7 @@ express()
                         }
                     }
 
-                    if(format === 'raw' || format === 'marc') {
+                    if(format === 'marc') {
                         res.set('Content-Type', 'text/plain; charset=utf-8')
                         res.send(results.join('\n'))
                     } else {
