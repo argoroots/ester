@@ -169,10 +169,10 @@ function humanJson(marc) {
 express()
     // routes mapping
     .use('/search', function(req, res, next) {
-        var query = req.query.q
-        var format = req.query.f || 'human'
-        var results = []
+        var format = req.query.f
+        if(['human', 'simple', 'concat', 'json', 'marc', 'raw'].indexOf(format) === -1) format = 'human'
 
+        var query = req.query.q
         if(!query) return next(new Error('No query parameter (q)!'))
 
         zoom.connection('193.40.4.242:212/INNOPAC')
@@ -184,6 +184,7 @@ express()
                     if(err) return next(err)
 
                     var ids = []
+                    var results = []
                     while (records.hasNext()) {
                         var r = records.next()
 
@@ -194,24 +195,18 @@ express()
                         if(ids.indexOf(id) !== -1) continue
                         ids.push(id)
 
-                        if(format === 'human') {
-                            var result = humanJson(r.json)
-                        } else if(format === 'simple') {
-                            var result = simpleJson(r.json)
-                        } else if(format === 'concat') {
-                            var result = concatJson(r.json)
-                        } else if(format === 'json') {
-                            var result = r.json
-                        } else if(format === 'raw') {
-                            var result = {marc: r.raw}
-                        } else if(format === 'marc') {
-                            var result = {marc: r.render}
+                        var full_result = {
+                            human: humanJson(r.json),
+                            simple: simpleJson(r.json),
+                            concat: concatJson(r.json),
+                            json: r.json,
+                            marc: r.render,
+                            raw: r.raw
                         }
-                        result._id = id
 
-                        var filename = path.join(APP_TMPDIR, id)
+                        var filename = path.join(APP_TMPDIR, id + '.json')
                         if(!fs.existsSync(filename)) {
-                            fs.writeFile(filename, r.raw, function(err) {
+                            fs.writeFile(filename, JSON.stringify(full_result, null, '  '), function(err) {
                                 if(err) return next(err)
                             })
                         }
@@ -219,25 +214,33 @@ express()
                         if(format === 'marc') {
                             results.push(result.marc)
                         } else {
+                            var result = full_result[format]
+                            result._id = id
                             results.push(result)
                         }
-                    }
-                    var result = {
-                        result: results,
-                        count: results.length,
-                        version: APP_VERSION,
-                        started: APP_STARTED
                     }
 
                     if(format === 'marc') {
                         res.set('Content-Type', 'text/plain; charset=utf-8')
                         res.send(results.join('\n'))
                     } else {
-                        res.send(result)
+                        res.send({
+                            result: results,
+                            count: results.length,
+                            version: APP_VERSION,
+                            started: APP_STARTED
+                        })
                     }
                 })
             })
     })
+
+    .use('/item/:id', function(req, res, next) {
+        var id = req.params.q
+        var format = req.query.f || 'marc'
+        var results = []
+    })
+
 
     // error
     .use(function(err, req, res, next) {
