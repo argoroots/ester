@@ -178,36 +178,31 @@ express()
                         if(!r) continue
                         if(!r._record) continue
 
+                        var id = md5(r.raw)
+                        if(ids.indexOf(id) !== -1) continue
+                        ids.push(id)
+
                         if(req.params.type === 'human') {
                             var result = humanJson(r.json)
-                            result._id = md5(r.raw)
                         } else if(req.params.type === 'simple') {
                             var result = simpleJson(r.json)
-                            result._id = md5(r.raw)
                         } else if(req.params.type === 'concat') {
                             var result = concatJson(r.json)
-                            result._id = md5(r.raw)
                         } else if(req.params.type === 'json') {
                             var result = r.json
-                            result._id = md5(r.raw)
                         } else if(req.params.type === 'raw') {
-                            var result = {}
-                            result.marc = r.raw
-                            result._id = md5(r.raw)
+                            var result = {marc: r.raw}
                         } else if(req.params.type === 'marc') {
-                            var result = {}
-                            result.marc = r.render
-                            result._id = md5(r.raw)
+                            var result = {marc: r.render}
                         } else {
                             return res.redirect('/simple?q=' + req.query.q)
                         }
-                        if(ids.indexOf(result._id) === -1) {
-                            ids.push(result._id)
-                            if(req.params.type === 'marc') {
-                                results.push(result.marc)
-                            } else {
-                                results.push(result)
-                            }
+                        result._id = id
+
+                        if(req.params.type === 'marc') {
+                            results.push(result.marc)
+                        } else {
+                            results.push(result)
                         }
                     }
                     var result = {
