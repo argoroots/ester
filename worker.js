@@ -3,7 +3,7 @@ if(process.env.NEW_RELIC_LICENSE_KEY) require('newrelic')
 var express = require('express')
 var zoom    = require('node-zoom')
 var op      = require('object-path')
-var yaml    = require('js-yaml')
+var md5     = require('md5')
 
 
 
@@ -173,21 +173,28 @@ express()
                         if(!r) continue
                         if(!r._record) continue
 
+                        var result = {}
                         if(req.params.type === 'human') {
-                            results.push(humanJson(r.json))
+                            result = humanJson(r.json)
+                            result._id = md5(r.raw)
                         } else if(req.params.type === 'simple') {
-                            results.push(simpleJson(r.json))
+                            result = simpleJson(r.json)
+                            result._id = md5(r.raw)
                         } else if(req.params.type === 'concat') {
-                            results.push(concatJson(r.json))
+                            result = concatJson(r.json)
+                            result._id = md5(r.raw)
                         } else if(req.params.type === 'json') {
-                            results.push(r.json)
+                            result = r.json
+                            result._id = md5(r.raw)
                         } else if(req.params.type === 'raw') {
-                            results.push(r.raw)
+                            result.data = r.raw
+                            result._id = md5(r.raw)
                         } else if(req.params.type === 'marc') {
-                            results.push(r.render)
+                            result = r.render
                         } else {
                             return res.redirect('/simple?q=' + req.query.q)
                         }
+                        results.push(result)
                     }
                     var result = {
                         result: results,
@@ -199,9 +206,6 @@ express()
                     if(req.params.type === 'marc') {
                         res.set('Content-Type', 'text/plain; charset=utf-8')
                         res.send(results.join('\n'))
-                    } else if(req.query.format === 'yaml') {
-                        res.set('Content-Type', 'text/x-yaml; charset=utf-8')
-                        res.send(yaml.safeDump(result, {sortKeys: true, indent: 4}))
                     } else {
                         res.send(result)
                     }
