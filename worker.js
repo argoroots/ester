@@ -167,7 +167,8 @@ function humanJson(marc) {
 
 
 express()
-    // routes mapping
+
+    // search items
     .use('/search', function(req, res, next) {
         var format = req.query.f
         if(['human', 'simple', 'concat', 'json', 'marc'].indexOf(format) === -1) format = 'human'
@@ -234,6 +235,7 @@ express()
             })
     })
 
+    // get item by id
     .use('/item/:id', function(req, res, next) {
         var format = req.query.f
         if(['human', 'simple', 'concat', 'json', 'marc'].indexOf(format) === -1) format = 'human'
@@ -259,8 +261,7 @@ express()
 
     })
 
-
-    // error
+    // show error
     .use(function(err, req, res, next) {
         var status = parseInt(err.status) || 500
 
