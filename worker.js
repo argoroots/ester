@@ -168,8 +168,9 @@ function humanJson(marc) {
 
 express()
     // routes mapping
-    .use('/:type', function(req, res, next) {
+    .use('/search', function(req, res, next) {
         var query = req.query.q
+        var format = req.query.f || 'human'
         var results = []
 
         if(!query) return next(new Error('No query parameter (q)!'))
@@ -193,20 +194,18 @@ express()
                         if(ids.indexOf(id) !== -1) continue
                         ids.push(id)
 
-                        if(req.params.type === 'human') {
+                        if(format === 'human') {
                             var result = humanJson(r.json)
-                        } else if(req.params.type === 'simple') {
+                        } else if(format === 'simple') {
                             var result = simpleJson(r.json)
-                        } else if(req.params.type === 'concat') {
+                        } else if(format === 'concat') {
                             var result = concatJson(r.json)
-                        } else if(req.params.type === 'json') {
+                        } else if(format === 'json') {
                             var result = r.json
-                        } else if(req.params.type === 'raw') {
+                        } else if(format === 'raw') {
                             var result = {marc: r.raw}
-                        } else if(req.params.type === 'marc') {
+                        } else if(format === 'marc') {
                             var result = {marc: r.render}
-                        } else {
-                            return res.redirect('/simple?q=' + req.query.q)
                         }
                         result._id = id
 
@@ -217,7 +216,7 @@ express()
                             })
                         }
 
-                        if(req.params.type === 'marc') {
+                        if(format === 'marc') {
                             results.push(result.marc)
                         } else {
                             results.push(result)
@@ -230,7 +229,7 @@ express()
                         started: APP_STARTED
                     }
 
-                    if(req.params.type === 'marc') {
+                    if(format === 'marc') {
                         res.set('Content-Type', 'text/plain; charset=utf-8')
                         res.send(results.join('\n'))
                     } else {
