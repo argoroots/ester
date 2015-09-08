@@ -138,7 +138,10 @@ function humanJson(marc) {
         }
     }
     for(a1 in op.get(marc, [700, 'fields'], [])) { //authors
-        op.push(tags, op.get(authormapping, op.get(marc, [700, 'fields', a1, 'e', 0], ''), op.get(marc, [700, 'fields', a1, 'e', 0])), op.get(marc, [700, 'fields', a1, 'a', 0]))
+        var autor_tag = op.get(marc, [700, 'fields', a1, 'e', 0])
+        var autor_value = op.get(marc, [700, 'fields', a1, 'a', 0])
+        if(op.has(authormapping, autor_tag)) autor_tag = op.get(authormapping, autor_tag)
+        if(autor_tag && autor_value) op.push(tags, autor_tag, autor_value)
     }
     console.log(JSON.stringify(tags, null, '   '))
     for(k in tags) {
