@@ -167,6 +167,7 @@ express()
                 resultset.getRecords(0, resultset.size, function(err, records) {
                     if(err) return next(err)
 
+                    var ids = []
                     while (records.hasNext()) {
                         var r = records.next()
 
@@ -187,14 +188,19 @@ express()
                             result = r.json
                             result._id = md5(r.raw)
                         } else if(req.params.type === 'raw') {
-                            result.data = r.raw
+                            result.marc = r.raw
                             result._id = md5(r.raw)
                         } else if(req.params.type === 'marc') {
                             result = r.render
                         } else {
                             return res.redirect('/simple?q=' + req.query.q)
                         }
-                        results.push(result)
+                        if(req.params.type !== 'marc' && ids.indexOf(result._id) === -1) {
+                            ids.push(result._id)
+                            results.push(result)
+                        } esle {
+                            results.push(result)
+                        }
                     }
                     var result = {
                         result: results,
