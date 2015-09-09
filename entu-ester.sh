@@ -1,6 +1,6 @@
 #!/bin/bash
 
-mkdir -p /data/entu-ester/code /data/entu-ester/log /data/entu-ester/tmp
+mkdir -p /data/entu-ester/code
 cd /data/entu-ester/code
 
 git clone https://github.com/argoroots/entu-ester.git ./
