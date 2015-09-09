@@ -7,6 +7,14 @@ var fs     = require('fs')
 
 
 
+// strip chars from string
+function stripString(string, charlist) {
+    if(!charlist) charlist = ' /,;:'
+    return string.replace(new RegExp('^[' + charlist + ']+'), '').replace(new RegExp('[' + charlist + ']+$'), '')
+}
+
+
+
 // make unique array - myArray.filter(uniqueArray)
 function uniqueArray(value, index, self) {
     return self.indexOf(value) === index
@@ -31,7 +39,7 @@ function simpleJson(marc) {
             var values = {}
             for(k3 in op.get(marc, ['fields', k1, k2, 'subfields'], [])) { //subfields
                 for(k4 in op.get(marc, ['fields', k1, k2, 'subfields', k3], [])) { //values
-                    op.push(values, k4, op.get(marc, ['fields', k1, k2, 'subfields', k3, k4]))
+                    op.push(values, k4, stripString(op.get(marc, ['fields', k1, k2, 'subfields', k3, k4])))
                 }
             }
 
