@@ -25,6 +25,7 @@
         "md5": "2.x",
         "newrelic": "1.x",
         "node-zoom": "0.x",
-        "object-path": "0.x"
+        "object-path": "0.x",
+        "raven": "0.x"
     }
 }

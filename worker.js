@@ -4,6 +4,7 @@ var express = require('express')
 var cors    = require('cors')
 var path    = require('path')
 var fs      = require('fs')
+var raven   = require('raven')
 
 
 
@@ -12,6 +13,7 @@ APP_VERSION = require('./package').version
 APP_STARTED = new Date().toISOString()
 APP_PORT    = process.env.PORT || 3000
 APP_TMPDIR  = process.env.TMPDIR || path.join(__dirname, 'tmp')
+APP_SENTRY  = process.env.SENTRY_DSN
 
 
 
@@ -22,6 +24,9 @@ fs.existsSync(APP_TMPDIR) || fs.mkdirSync(APP_TMPDIR)
 express()
     // set CORS
     .use(cors())
+
+    // logs to getsentry.com
+    .use(raven.middleware.express(APP_SENTRY))
 
     // routes mapping
     .use('/search', require('./routes/search'))

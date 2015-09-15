@@ -10,7 +10,7 @@ git pull
 version=`date +"%y%m%d.%H%M%S"`
 
 docker build -q -t entu-ester:$version ./ && docker tag -f entu-ester:$version entu-ester:latest
-docker kill entu-ester
+docker stop entu-ester
 docker rm entu-ester
 docker run -d \
     --name="entu-ester" \
@@ -22,6 +22,7 @@ docker run -d \
     --env="NEW_RELIC_LOG=stdout" \
     --env="NEW_RELIC_LOG_LEVEL=error" \
     --env="NEW_RELIC_NO_CONFIG_FILE=true" \
+    --env="SENTRY_DSN=" \
     entu-ester:latest
 
 /data/nginx.sh
