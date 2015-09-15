@@ -1,4 +1,4 @@
-# ester.ee proxy for entu.ee
+# ester.ee proxy for Entu.ee
 
 Very simple web service to get JSON fromated results from ester.ee database.
 

@@ -1,6 +1,7 @@
 if(process.env.NEW_RELIC_LICENSE_KEY) require('newrelic')
 
 var express = require('express')
+var cors    = require('cors')
 var path    = require('path')
 var fs      = require('fs')
 
@@ -19,6 +20,11 @@ fs.existsSync(APP_TMPDIR) || fs.mkdirSync(APP_TMPDIR)
 
 
 express()
+    // set CORS
+    .use(cors({
+        origin: '*.entu.ee'
+    }))
+
     // routes mapping
     .use('/search', require('./routes/search'))
     .use('/item', require('./routes/item'))
