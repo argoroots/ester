@@ -21,9 +21,7 @@ fs.existsSync(APP_TMPDIR) || fs.mkdirSync(APP_TMPDIR)
 
 express()
     // set CORS
-    .use(cors({
-        origin: '*.entu.ee'
-    }))
+    .use(cors())
 
     // routes mapping
     .use('/search', require('./routes/search'))
