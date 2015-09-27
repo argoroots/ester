@@ -25,12 +25,15 @@ express()
     // set CORS
     .use(cors())
 
-    // logs to getsentry.com
-    .use(raven.middleware.express(APP_SENTRY))
+    // logs to getsentry.com - start
+    .use(raven.middleware.express.requestHandler(APP_SENTRY))
 
     // routes mapping
     .use('/search', require('./routes/search'))
     .use('/item', require('./routes/item'))
+
+    // logs to getsentry.com - error
+    .use(raven.middleware.express.errorHandler(APP_SENTRY))
 
     // show error
     .use(function(err, req, res, next) {
