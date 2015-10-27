@@ -56,6 +56,7 @@ function concatJson(marc) {
     var tags = {
         leader: op.get(marc, 'leader')
     }
+
     for(k1 in op.get(marc, 'fields', [])) {
         for(k2 in op.get(marc, ['fields', k1], [])) { //tags
             var value = ''
@@ -78,6 +79,7 @@ function concatJson(marc) {
             if(value.trim()) op.push(tags, parseInt(k2), value.trim())
         }
     }
+
     return tags
 }
 

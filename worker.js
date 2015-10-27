@@ -33,37 +33,39 @@ var raven_client = new raven.Client({
 
 
 // start express app
-express()
-    // set CORS
-    .use(cors())
+var app = express()
 
-    // logs to getsentry.com - start
-    .use(raven.middleware.express.requestHandler(raven_client))
+// get correct client IP behind nginx
+app.set('trust proxy', true)
 
-    // routes mapping
-    .use('/search', require('./routes/search'))
-    .use('/item', require('./routes/item'))
+// set CORS
+app.use(cors())
 
-    // logs to getsentry.com - error
-    .use(raven.middleware.express.errorHandler(raven_client))
+// logs to getsentry.com - start
+app.use(raven.middleware.express.requestHandler(raven_client))
 
-    // show error
-    .use(function(err, req, res, next) {
-        var status = parseInt(err.status) || 500
+// routes mapping
+app.use('/', require('./routes/index'))
+app.use('/search', require('./routes/search'))
+app.use('/item', require('./routes/item'))
 
-        res.status(status)
-        res.send({
-            error: err.message,
-            version: APP_VERSION,
-            started: APP_STARTED
-        })
+// logs to getsentry.com - error
+app.use(raven.middleware.express.errorHandler(raven_client))
 
-        if(err.status !== 404) console.log(err)
+// show error
+app.use(function(err, req, res, next) {
+    res.send({
+        error: err.message,
+        version: APP_VERSION,
+        started: APP_STARTED
     })
 
-    // start server
-    .listen(APP_PORT)
+    if(err.status !== 404) console.log(err)
+})
 
 
 
-console.log(new Date().toString() + ' started listening port ' + APP_PORT)
+// start server
+app.listen(APP_PORT, function() {
+    console.log(new Date().toString() + ' started listening port ' + APP_PORT)
+})
