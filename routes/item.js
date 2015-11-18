@@ -1,6 +1,6 @@
-var router = require('express').Router()
-var path   = require('path')
 var fs     = require('fs')
+var path   = require('path')
+var router = require('express').Router()
 
 
 

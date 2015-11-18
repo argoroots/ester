@@ -1,9 +1,9 @@
+var fs     = require('fs')
+var md5    = require('md5')
+var op     = require('object-path')
+var path   = require('path')
 var router = require('express').Router()
 var zoom   = require('node-zoom')
-var op     = require('object-path')
-var md5    = require('md5')
-var path   = require('path')
-var fs     = require('fs')
 
 
 

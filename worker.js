@@ -53,7 +53,7 @@ app.use('/item', require('./routes/item'))
 app.use(raven.middleware.express.errorHandler(raven_client))
 
 // show error
-app.use(function(err, req, res, next) {
+app.use(function(err, req, res) {
     res.send({
         error: err.message,
         version: APP_VERSION,
