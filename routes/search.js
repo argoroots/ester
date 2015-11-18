@@ -30,11 +30,11 @@ function simpleJson(marc) {
     for(k1 in op.get(marc, 'fields', [])) {
         for(k2 in op.get(marc, ['fields', k1], [])) { //tags
             if(typeof op.get(marc, ['fields', k1, k2]) === 'string') {
-                op.push(tags, parseInt(k2), op.get(marc, ['fields', k1, k2], ''))
+                op.push(tags, parseInt(k2, 10), op.get(marc, ['fields', k1, k2], ''))
                 continue
             }
-            if(op.get(marc, ['fields', k1, k2, 'ind1'], '').trim()) op.set(tags, [parseInt(k2), 'ind1'], op.get(marc, ['fields', k1, k2, 'ind1']))
-            if(op.get(marc, ['fields', k1, k2, 'ind2'], '').trim()) op.set(tags, [parseInt(k2), 'ind2'], op.get(marc, ['fields', k1, k2, 'ind2']))
+            if(op.get(marc, ['fields', k1, k2, 'ind1'], '').trim()) op.set(tags, [parseInt(k2, 10), 'ind1'], op.get(marc, ['fields', k1, k2, 'ind1']))
+            if(op.get(marc, ['fields', k1, k2, 'ind2'], '').trim()) op.set(tags, [parseInt(k2, 10), 'ind2'], op.get(marc, ['fields', k1, k2, 'ind2']))
 
             var values = {}
             for(k3 in op.get(marc, ['fields', k1, k2, 'subfields'], [])) { //subfields
@@ -43,7 +43,7 @@ function simpleJson(marc) {
                 }
             }
 
-            op.push(tags, [parseInt(k2), 'fields'], values)
+            op.push(tags, [parseInt(k2, 10), 'fields'], values)
         }
     }
     return tags
@@ -76,7 +76,7 @@ function concatJson(marc) {
                 }
             }
 
-            if(value.trim()) op.push(tags, parseInt(k2), value.trim())
+            if(value.trim()) op.push(tags, parseInt(k2, 10), value.trim())
         }
     }
 
