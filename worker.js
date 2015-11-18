@@ -22,7 +22,7 @@ fs.existsSync(APP_TMPDIR) || fs.mkdirSync(APP_TMPDIR)
 
 
 // initialize getsentry.com client
-var raven_client = new raven.Client({
+var ravenClient = new raven.Client({
     release: APP_VERSION,
     dataCallback: function(data) {
         delete data.request.env
@@ -42,7 +42,7 @@ app.set('trust proxy', true)
 app.use(cors())
 
 // logs to getsentry.com - start
-app.use(raven.middleware.express.requestHandler(raven_client))
+app.use(raven.middleware.express.requestHandler(ravenClient))
 
 // routes mapping
 app.use('/', require('./routes/index'))
@@ -50,7 +50,7 @@ app.use('/search', require('./routes/search'))
 app.use('/item', require('./routes/item'))
 
 // logs to getsentry.com - error
-app.use(raven.middleware.express.errorHandler(raven_client))
+app.use(raven.middleware.express.errorHandler(ravenClient))
 
 // show error
 app.use(function(err, req, res) {

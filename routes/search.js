@@ -122,7 +122,7 @@ function humanJson(marc) {
         710: {a: 'publisher'},
         907: {a: 'ester-id'},
     }
-    var authormapping = {
+    var authorMapping = {
         'fotograaf':       'photographer',
         'helilooja':       'composer',
         'illustreerija':   'illustrator',
@@ -153,10 +153,10 @@ function humanJson(marc) {
         }
     }
     for(a1 in op.get(marc, [700, 'fields'], [])) { //authors
-        var autor_tag = op.get(marc, [700, 'fields', a1, 'e', 0], '').replace('.', '')
-        var autor_value = op.get(marc, [700, 'fields', a1, 'a', 0], '')
-        if(op.has(authormapping, autor_tag)) autor_tag = op.get(authormapping, autor_tag)
-        if(autor_tag && autor_value) op.push(tags, autor_tag, autor_value)
+        var authorTag = op.get(marc, [700, 'fields', a1, 'e', 0], '').replace('.', '')
+        var authorValue = op.get(marc, [700, 'fields', a1, 'a', 0], '')
+        if(op.has(authorMapping, authorTag)) authorTag = op.get(authorMapping, authorTag)
+        if(authorTag && authorValue) op.push(tags, authorTag, authorValue)
     }
     for(k in tags) {
         tags[k] = tags[k].filter(uniqueArray)
@@ -194,7 +194,7 @@ router.get('/', function(req, res, next) {
                     if(ids.indexOf(id) !== -1) continue
                     ids.push(id)
 
-                    var full_result = {
+                    var fullResult = {
                         human: humanJson(r.json),
                         simple: simpleJson(r.json),
                         concat: concatJson(r.json),
@@ -204,15 +204,15 @@ router.get('/', function(req, res, next) {
 
                     var filename = path.join(APP_TMPDIR, id + '.json')
                     if(!fs.existsSync(filename)) {
-                        fs.writeFile(filename, JSON.stringify(full_result, null, '  '), function(err) {
+                        fs.writeFile(filename, JSON.stringify(fullResult, null, '  '), function(err) {
                             if(err) return next(err)
                         })
                     }
 
                     if(format === 'marc') {
-                        results.push(full_result.marc)
+                        results.push(fullResult.marc)
                     } else {
-                        var result = full_result[format]
+                        var result = fullResult[format]
                         result._id = id
                         results.push(result)
                     }

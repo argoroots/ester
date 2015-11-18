@@ -15,14 +15,14 @@ router.get('/:id', function(req, res, next) {
     var filename = path.join(APP_TMPDIR, id + '.json')
     if(!id.match('[a-fA-F0-9]{32}') || !fs.existsSync(filename)) return next(new Error('Invalid ID'))
 
-    var full_result = require(filename)
+    var fullResult = require(filename)
 
     if(format === 'marc') {
         res.set('Content-Type', 'text/plain; charset=utf-8')
-        res.send(full_result.marc)
+        res.send(fullResult.marc)
     } else {
         res.send({
-            result: full_result[format],
+            result: fullResult[format],
             version: APP_VERSION,
             started: APP_STARTED
         })
