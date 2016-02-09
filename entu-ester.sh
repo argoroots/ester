@@ -1,33 +1,35 @@
 #!/bin/bash
 
-mkdir -p /data/entu-ester/code
-cd /data/entu-ester/code
+mkdir -p /data/ester/code
+cd /data/ester/code
 
 git clone -q https://github.com/argoroots/entu-ester.git ./
 git checkout -q master
 git pull
-printf "\n\n"
 
+printf "\n\n"
 version=`date +"%y%m%d.%H%M%S"`
-docker build -q -t entu-ester:$version ./ && docker tag -f entu-ester:$version entu-ester:latest
-printf "\n\n"
+docker build --pull --tag=ester:$version ./ && docker tag ester:$version ester:latest
 
-docker stop entu-ester
-docker rm entu-ester
+printf "\n\n"
+docker stop ester
+docker rm ester
 docker run -d \
-    --name="entu-ester" \
+    --net="entu" \
+    --name="ester" \
     --restart="always" \
-    --memory="512m" \
+    --cpu-shares=256 \
+    --memory="1g" \
+    --env="NODE_ENV=production" \
+    --env="VERSION=$version" \
     --env="PORT=80" \
-    --env="NEW_RELIC_APP_NAME=entu-ester" \
+    --env="NEW_RELIC_APP_NAME=ester" \
     --env="NEW_RELIC_LICENSE_KEY=" \
     --env="NEW_RELIC_LOG=stdout" \
     --env="NEW_RELIC_LOG_LEVEL=error" \
     --env="NEW_RELIC_NO_CONFIG_FILE=true" \
     --env="SENTRY_DSN=" \
-    entu-ester:latest
+    ester:latest
 
-docker inspect -f "{{ .NetworkSettings.IPAddress }}" entu-ester
 printf "\n\n"
-
-/data/nginx.sh
+docker exec nginx /etc/init.d/nginx reload
