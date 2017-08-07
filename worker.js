@@ -42,7 +42,7 @@ app.set('trust proxy', true)
 app.use(cors())
 
 // logs to getsentry.com - start
-app.use(raven.requestHandler(ravenClient))
+app.use(raven.requestHandler())
 
 // routes mapping
 app.use('/', require('./routes/index'))
@@ -50,7 +50,7 @@ app.use('/search', require('./routes/search'))
 app.use('/item', require('./routes/item'))
 
 // logs to getsentry.com - error
-app.use(raven.errorHandler(ravenClient))
+app.use(raven.errorHandler())
 
 // show error
 app.use(function(err, req, res) {
