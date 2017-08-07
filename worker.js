@@ -9,7 +9,7 @@ var raven   = require('raven')
 
 
 // global variables (and list of all used environment variables)
-APP_VERSION = process.env.VERSION || process.env.SOURCE_VERSION || require('./package').version
+APP_VERSION = (process.env.VERSION || process.env.SOURCE_VERSION) || require('./package').version
 APP_STARTED = new Date().toISOString()
 APP_PORT    = process.env.PORT || 3000
 APP_TMPDIR  = process.env.TMPDIR || path.join(__dirname, 'tmp')
