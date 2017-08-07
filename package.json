@@ -13,8 +13,9 @@
         "url": "https://github.com/argoroots/entu-ester/issues"
     },
     "scripts": {
-        "start": "node ./master.js"
+        "start": "node ./worker.js"
     },
+    "main": "worker.js",
     "engines": {
         "node": "0.12.x"
     },
@@ -23,9 +24,9 @@
         "cors": "2.x",
         "express": "4.x",
         "md5": "2.x",
-        "newrelic": "1.x",
+        "newrelic": "2.x",
         "node-zoom": "0.x",
         "object-path": "0.x",
-        "raven": "0.x"
+        "raven": "2.x"
     }
 }
