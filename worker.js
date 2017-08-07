@@ -28,7 +28,7 @@ raven.config(APP_SENTRY, {
         delete data.request.env
         return data
     }
-})
+}).install()
 
 
 
