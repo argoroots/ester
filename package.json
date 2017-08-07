@@ -27,6 +27,6 @@
         "newrelic": "2.x",
         "node-zoom": "0.x",
         "object-path": "0.x",
-        "raven": "2.x"
+        "raven": "1.x"
     }
 }
