@@ -22,7 +22,7 @@ fs.existsSync(APP_TMPDIR) || fs.mkdirSync(APP_TMPDIR)
 
 
 // initialize getsentry.com client
-var ravenClient = new raven.Client({
+raven.config(APP_SENTRY, {
     release: APP_VERSION,
     dataCallback: function(data) {
         delete data.request.env
