@@ -1,7 +1,7 @@
 {
     "private": true,
     "name": "entu-ester",
-    "version": "0.4.0",
+    "version": "0.5.0",
     "description": "ester.ee proxy for Entu.ee",
     "homepage": "https://github.com/argoroots/entu-ester",
     "author": "Argo Roots <argo@roots.ee>",
@@ -17,16 +17,16 @@
     },
     "main": "worker.js",
     "engines": {
-        "node": "0.12.x"
+        "node": "8.*"
     },
     "dependencies": {
-        "cluster": "0.x",
-        "cors": "2.x",
-        "express": "4.x",
-        "md5": "2.x",
-        "newrelic": "2.x",
-        "node-zoom2": "0.x",
-        "object-path": "0.x",
-        "raven": "2.x"
+        "cluster": "0.*",
+        "cors": "2.*",
+        "express": "4.*",
+        "md5": "2.*",
+        "newrelic": "2.*",
+        "node-zoom2": "0.*",
+        "object-path": "0.*",
+        "raven": "2.*"
     }
 }
