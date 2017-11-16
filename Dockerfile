@@ -1,4 +1,4 @@
-FROM node:0.12-slim
+FROM node:8-slim
 
 ADD ./ /usr/src/entu-ester
 RUN apt-get update && apt-get install -y libgcrypt11-dev libgnutls28-dev libxml2-dev libxslt-dev dpkg-dev python pkg-config

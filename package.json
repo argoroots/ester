@@ -25,7 +25,7 @@
         "express": "4.x",
         "md5": "2.x",
         "newrelic": "2.x",
-        "node-zoom": "0.x",
+        "node-zoom2": "0.x",
         "object-path": "0.x",
         "raven": "2.x"
     }
