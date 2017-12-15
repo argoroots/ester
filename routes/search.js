@@ -3,7 +3,7 @@ var md5    = require('md5')
 var op     = require('object-path')
 var path   = require('path')
 var router = require('express').Router()
-var zoom   = require('node-zoom')
+var zoom   = require('node-zoom2')
 
 
 
