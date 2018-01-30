@@ -1,8 +1,11 @@
 FROM ubuntu:devel
 
-ADD ./ /usr/src/entu-ester
+ENV DEBIAN_FRONTEND noninteractive
 
-RUN apt-get update && apt-get install -y nodejs npm libyaz5-dev
+RUN apt-get update
+RUN apt-get install -y nodejs npm libyaz5-dev
+
+ADD ./ /usr/src/entu-ester
 RUN cd /usr/src/entu-ester && npm --silent --production install
 
 CMD ["node", "/usr/src/entu-ester/master.js"]
