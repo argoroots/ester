@@ -82,6 +82,8 @@ def handler(event, context):
             'body': 'Bad Request'
         }
 
+    print event['queryStringParameters']['q']
+
     q = event['queryStringParameters']['q'].encode('utf-8').replace('https://www.ester.ee/record=', '').replace('*est', '')
 
     query = zoom.Query('PQF', '@or @attr 1=4 "%(st)s" @or @attr 1=7 "%(st)s" @attr 1=12 "%(st)s"' % {'st': q})
