@@ -72,47 +72,62 @@ def get_values(line):
 
 
 def handler(event, context):
-    conn = zoom.Connection('193.40.4.242', 212)
-    conn.databaseName = 'INNOPAC'
-    conn.preferredRecordSyntax = 'USMARC'
-
     if not event['queryStringParameters'] or not event['queryStringParameters']['q']:
         return {
             'statusCode': 400,
-            'body': 'Bad Request'
+            'headers': {
+                'Access-Control-Allow-Origin': '*'
+            },
+            'body': json.dumps({ 'message': 'Bad Request' })
         }
 
     print event['queryStringParameters']['q']
 
-    q = event['queryStringParameters']['q'].encode('utf-8').replace('https://www.ester.ee/record=', '').replace('*est', '')
+    try:
+        result = []
 
-    query = zoom.Query('PQF', '@or @attr 1=4 "%(st)s" @or @attr 1=7 "%(st)s" @attr 1=12 "%(st)s"' % {'st': q})
-    records = conn.search(query)
-    result = []
+        conn = zoom.Connection('193.40.4.242', 212)
+        conn.databaseName = 'INNOPAC'
+        conn.preferredRecordSyntax = 'USMARC'
 
-    for record in records:
-        r = {}
+        q = event['queryStringParameters']['q'].encode('utf-8').replace('https://www.ester.ee/record=', '').replace('*est', '')
 
-        for line in str(record).splitlines():
-            fields = get_values(line)
-            key = fields.get('key')
+        query = zoom.Query('PQF', '@or @attr 1=4 "%(st)s" @or @attr 1=7 "%(st)s" @attr 1=12 "%(st)s"' % {'st': q})
+        records = conn.search(query)
 
-            if key == '700' and fields.get('a') and author_mapping.get(fields.get('e')):
-                r.setdefault(author_mapping.get(fields.get('e'), fields.get('e')), []).append(fields.get('a'))
-            else:
-                for k, v in fields.iteritems():
-                    if mapping.get(key + k):
-                        r.setdefault(mapping.get(key + k), []).append(v)
+        for record in records:
+            r = {}
 
-        for k, v in r.iteritems():
-            r[k] = list(set(v))
+            for line in str(record).splitlines():
+                fields = get_values(line)
+                key = fields.get('key')
 
-        result.append(r)
+                if key == '700' and fields.get('a') and author_mapping.get(fields.get('e')):
+                    r.setdefault(author_mapping.get(fields.get('e'), fields.get('e')), []).append(fields.get('a'))
+                else:
+                    for k, v in fields.iteritems():
+                        if mapping.get(key + k):
+                            r.setdefault(mapping.get(key + k), []).append(v)
 
-    return {
-        'statusCode': 200,
-        'headers': {
-            'Access-Control-Allow-Origin': '*'
-        },
-        'body': json.dumps(result)
-    }
+            for k, v in r.iteritems():
+                r[k] = list(set(v))
+
+            result.append(r)
+
+        return {
+            'statusCode': 200,
+            'headers': {
+                'Access-Control-Allow-Origin': '*'
+            },
+            'body': json.dumps(result)
+        }
+    except Exception, e:
+        print e
+
+        return {
+            'statusCode': 500,
+            'headers': {
+                'Access-Control-Allow-Origin': '*'
+            },
+            'body': json.dumps({ 'message': str(e) })
+        }
