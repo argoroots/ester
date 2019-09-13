@@ -86,7 +86,7 @@ def handler(event, context):
     try:
         result = []
 
-        conn = zoom.Connection('193.40.4.242', 212)
+        conn = zoom.Connection('ester.ester.ee', 212)
         conn.databaseName = 'INNOPAC'
         conn.preferredRecordSyntax = 'USMARC'
 
