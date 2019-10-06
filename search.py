@@ -68,9 +68,7 @@ def clean_values(key, values):
         if v[0] == '[' and v[-1] == ']':
             v = v[1:-1]
 
-        print key + ' ' + v
-
-        if key == 'publishing-date' and v[0].lower() == 'c' and len(v[0]) == 5:
+        if key == 'publishing-date' and v[0].lower() == 'c' and len(v) == 5:
             v = v[1:]
 
         result.append(v)
