@@ -57,6 +57,27 @@ author_mapping = {
 }
 
 
+def clean_values(key, values):
+    result = []
+    for v in values:
+        v = v.strip(' /,;:')
+
+        if v[0] == '(' and v[-1] == ')':
+            v = v[1:-1]
+
+        if v[0] == '[' and v[-1] == ']':
+            v = v[1:-1]
+
+        print key + ' ' + v
+
+        if key == 'publishing-date' and v[0].lower() == 'c' and len(v[0]) == 5:
+            v = v[1:]
+
+        result.append(v)
+
+    return result
+
+
 def get_values(line):
     first, middle, rest = line.partition(' ')
     v_list = rest.split('$')
@@ -64,9 +85,9 @@ def get_values(line):
 
     if len(v_list) > 1:
         for v in v_list[1:]:
-            v_dict[v[0]] = v[1:].strip(' /,;:')
+            v_dict[v[0]] = v[1:]
     else:
-        v_dict['a'] = rest.strip(' /,;:')
+        v_dict['a'] = rest
 
     return v_dict
 
@@ -110,7 +131,7 @@ def handler(event, context):
                             r.setdefault(mapping.get(key + k), []).append(v)
 
             for k, v in r.iteritems():
-                r[k] = list(set(v))
+                r[k] = list(set(clean_values(k, v)))
 
             result.append(r)
 
