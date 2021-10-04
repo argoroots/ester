@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+
 import json
 from PyZ3950 import zoom
 
@@ -130,6 +131,9 @@ def handler(event, context):
 
             for k, v in r.iteritems():
                 r[k] = list(set(clean_values(k, v)))
+
+            if r['ester-id']:
+                r['ester-id'] = filter(lambda id: len(id) < 11 and (id.startswith('.b') or id.startswith('b')), r['ester-id'])
 
             result.append(r)
 
