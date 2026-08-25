@@ -2,6 +2,8 @@
 
 
 import json
+
+import pymarc
 from PyZ3950 import zoom
 
 
@@ -63,6 +65,9 @@ def clean_values(key, values):
     for v in values:
         v = v.strip(' /,;:')
 
+        if not v:
+            continue
+
         if v[0] == '(' and v[-1] == ')':
             v = v[1:-1]
 
@@ -77,22 +82,45 @@ def clean_values(key, values):
     return result
 
 
-def get_values(line):
-    first, middle, rest = line.partition(' ')
-    v_list = rest.split('$')
-    v_dict = { 'key': first.zfill(3) }
+def parse_record(record):
+    data = record.data
+    if isinstance(data, str):
+        # PyZ3950 mis-decodes the raw MARC bytes as latin-1 on Python 3
+        data = data.encode('latin-1')
 
-    if len(v_list) > 1:
-        for v in v_list[1:]:
-            v_dict[v[0]] = v[1:]
-    else:
-        v_dict['a'] = rest
+    rec = pymarc.Record(data=data, to_unicode=True, force_utf8=True)
+    r = {}
 
-    return v_dict
+    for field in rec.get_fields():
+        if field.is_control_field():
+            continue
+
+        subfields = [(sf.code, sf.value) for sf in field.subfields]
+
+        if field.tag == '700':
+            sf = dict(subfields)
+            author_type = author_mapping.get(sf.get('e', '').strip(' /,;:'))
+            if sf.get('a') and author_type:
+                r.setdefault(author_type, []).append(sf['a'])
+            continue
+
+        for code, value in subfields:
+            if mapping.get(field.tag + code):
+                r.setdefault(mapping.get(field.tag + code), []).append(value)
+
+    for k, v in r.items():
+        r[k] = list(set(clean_values(k, v)))
+
+    if r.get('ester-id'):
+        r['ester-id'] = [id for id in r['ester-id'] if len(id) < 11 and (id.startswith('.b') or id.startswith('b'))]
+
+    return r
 
 
 def handler(event, context):
-    if not event['queryStringParameters'] or not event['queryStringParameters']['q']:
+    params = event.get('queryStringParameters') or {}
+
+    if not params.get('q'):
         return {
             'statusCode': 400,
             'headers': {
@@ -101,7 +129,7 @@ def handler(event, context):
             'body': json.dumps({ 'message': 'Bad Request' })
         }
 
-    print event['queryStringParameters']['q']
+    print(params['q'])
 
     try:
         result = []
@@ -110,32 +138,13 @@ def handler(event, context):
         conn.databaseName = 'INNOPAC'
         conn.preferredRecordSyntax = 'USMARC'
 
-        q = event['queryStringParameters']['q'].encode('utf-8').replace('https://www.ester.ee/record=', '').replace('*est', '')
+        q = params['q'].replace('https://www.ester.ee/record=', '').replace('*est', '')
 
         query = zoom.Query('PQF', '@or @attr 1=4 "%(st)s" @or @attr 1=7 "%(st)s" @attr 1=12 "%(st)s"' % {'st': q})
         records = conn.search(query)
 
         for record in records:
-            r = {}
-
-            for line in str(record).splitlines():
-                fields = get_values(line)
-                key = fields.get('key')
-
-                if key == '700' and fields.get('a') and author_mapping.get(fields.get('e')):
-                    r.setdefault(author_mapping.get(fields.get('e'), fields.get('e')), []).append(fields.get('a'))
-                else:
-                    for k, v in fields.iteritems():
-                        if mapping.get(key + k):
-                            r.setdefault(mapping.get(key + k), []).append(v)
-
-            for k, v in r.iteritems():
-                r[k] = list(set(clean_values(k, v)))
-
-            if r['ester-id']:
-                r['ester-id'] = filter(lambda id: len(id) < 11 and (id.startswith('.b') or id.startswith('b')), r['ester-id'])
-
-            result.append(r)
+            result.append(parse_record(record))
 
         return {
             'statusCode': 200,
@@ -144,8 +153,8 @@ def handler(event, context):
             },
             'body': json.dumps(result)
         }
-    except Exception, e:
-        print e
+    except Exception as e:
+        print(e)
 
         return {
             'statusCode': 500,

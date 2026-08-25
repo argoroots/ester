@@ -1,2 +1,2 @@
-tmp
-*.pyc
+__pycache__/
+function.zip
