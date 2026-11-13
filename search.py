@@ -2,6 +2,7 @@
 
 
 import json
+import time
 
 import pymarc
 from PyZ3950 import zoom
@@ -42,6 +43,18 @@ mapping = { #http://www.loc.gov/marc/bibliographic
     '710a': 'publisher',
     '907a': 'ester-id'
 }
+
+SEARCH_ATTRIBUTES = (
+    4,   # title
+    7,   # ISBN
+    12,  # local record number (ester-id)
+)
+
+# Each record is fetched separately (0.1-1 s each), so a broad query must be
+# capped by count and by time to stay within the Lambda timeout.
+MAX_RECORDS = 10
+TIME_BUDGET = 12  # seconds; searches still running by then won't return anything useful
+TIME_MARGIN = 2   # seconds left before the Lambda timeout for closing and responding
 
 author_mapping = {
     'fotograaf':       'photographer',
@@ -117,49 +130,99 @@ def parse_record(record):
     return r
 
 
+def search(q, deadline):
+    # Title, ISBN/ISSN and local record number are queried separately: ESTER's
+    # server reports phantom hits for @or-combined queries that fail on fetch.
+    conn = zoom.Connection('ester.ester.ee', 212)
+    conn.databaseName = 'INNOPAC'
+    conn.preferredRecordSyntax = 'USMARC'
+    conn.presentChunk = MAX_RECORDS  # fetch only as many records as we return
+
+    result = []
+    seen = set()
+
+    def set_timeout():
+        # Bound every socket read by the remaining budget, so one slow search
+        # (e.g. a very broad title query) can't run past the Lambda timeout.
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            raise TimeoutError
+        conn._cli.sock.settimeout(remaining)
+
+    try:
+        for attr in SEARCH_ATTRIBUTES:
+            set_timeout()
+            records = conn.search(zoom.Query('PQF', '@attr 1=%d "%s"' % (attr, q)))
+
+            for i in range(len(records)):
+                if len(result) >= MAX_RECORDS:
+                    return result, False
+
+                set_timeout()
+                try:
+                    r = parse_record(records[i])
+                except zoom.Bib1Err as e:
+                    print('skipped record %d for 1=%d: %s' % (i, attr, e))
+                    continue
+
+                key = tuple(sorted(r.get('ester-id', [])))
+                if key:
+                    if key in seen:
+                        continue
+                    seen.add(key)
+
+                result.append(r)
+    except (TimeoutError, zoom.ConnectionError) as e:
+        if time.monotonic() < deadline:
+            raise
+        print('time budget exhausted after %d records' % len(result))
+        return result, True
+    finally:
+        try:
+            conn.close()
+        except Exception:
+            pass
+
+    return result, False
+
+
+def response(status, body):
+    return {
+        'statusCode': status,
+        'headers': {
+            'Access-Control-Allow-Origin': '*',
+            'Content-Type': 'application/json',
+        },
+        'body': json.dumps(body)
+    }
+
+
 def handler(event, context):
     params = event.get('queryStringParameters') or {}
 
     if not params.get('q'):
-        return {
-            'statusCode': 400,
-            'headers': {
-                'Access-Control-Allow-Origin': '*'
-            },
-            'body': json.dumps({ 'message': 'Bad Request' })
-        }
+        return response(400, { 'message': 'Bad Request' })
 
     print(params['q'])
 
+    q = params['q'].replace('https://www.ester.ee/record=', '').replace('*est', '')
+    q = q.replace('"', ' ').strip()
+
+    if not q:
+        return response(400, { 'message': 'Bad Request' })
+
     try:
-        result = []
+        budget = TIME_BUDGET
+        if context is not None and hasattr(context, 'get_remaining_time_in_millis'):
+            budget = min(budget, context.get_remaining_time_in_millis() / 1000 - TIME_MARGIN)
 
-        conn = zoom.Connection('ester.ester.ee', 212)
-        conn.databaseName = 'INNOPAC'
-        conn.preferredRecordSyntax = 'USMARC'
+        result, timed_out = search(q, time.monotonic() + budget)
 
-        q = params['q'].replace('https://www.ester.ee/record=', '').replace('*est', '')
+        if timed_out and not result:
+            return response(504, { 'message': 'ESTER search timed out' })
 
-        query = zoom.Query('PQF', '@or @attr 1=4 "%(st)s" @or @attr 1=7 "%(st)s" @attr 1=12 "%(st)s"' % {'st': q})
-        records = conn.search(query)
-
-        for record in records:
-            result.append(parse_record(record))
-
-        return {
-            'statusCode': 200,
-            'headers': {
-                'Access-Control-Allow-Origin': '*'
-            },
-            'body': json.dumps(result)
-        }
+        return response(200, result)
     except Exception as e:
         print(e)
 
-        return {
-            'statusCode': 500,
-            'headers': {
-                'Access-Control-Allow-Origin': '*'
-            },
-            'body': json.dumps({ 'message': str(e) })
-        }
+        return response(500, { 'message': str(e) })
